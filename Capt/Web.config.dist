@@ -32,6 +32,12 @@
 
 		<!-- <add key="ForceDomainName" value="www-qa.captrato.com" /> -->
 
+		<!-- If you're going to use Google, Yahoo or Bing webmaster tools: 
+		<add key="GoogleSiteVerification" value="" />
+		<add key="YahooSiteVerification" value="" />
+		<add key="BingSiteVerification" value="" />
+		-->
+
 		<add key="UseMicrosoftCDN" value="True" />
 		<add key="webpages:Version" value="1.0.0.0" />
 		<add key="ClientValidationEnabled" value="true" />

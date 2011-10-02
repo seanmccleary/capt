@@ -39,8 +39,10 @@ namespace Capt.Controllers
 			ViewBag.SiteName = System.Configuration.ConfigurationManager.AppSettings["SiteName"];
 			ViewBag.IsAdminStuffShown = System.Web.HttpContext.Current.Session["IsPrivilegeModeEnabled"] as bool? == true;
 
-			// TODO: Apparently there's a NuGet package for analytics. Check it out.
 			ViewBag.GoogleAnalyticsId = System.Configuration.ConfigurationManager.AppSettings["GoogleAnalyticsId"];
+			ViewBag.GoogleSiteVerification = System.Configuration.ConfigurationManager.AppSettings["GoogleSiteVerification"];
+			ViewBag.YahooSiteVerification = System.Configuration.ConfigurationManager.AppSettings["YahooSiteVerification"];
+			ViewBag.BingSiteVerification = System.Configuration.ConfigurationManager.AppSettings["BingSiteVerification"];
 
 			ViewBag.UseMicrosoftCDN =
 				System.Configuration.ConfigurationManager.AppSettings["UseMicrosoftCDN"] != null

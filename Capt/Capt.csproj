@@ -135,7 +135,6 @@
     <Compile Include="Helpers\AjaxExtensions.cs" />
     <Compile Include="Helpers\HtmlExtensions.cs" />
     <Compile Include="Helpers\RssActionResult.cs" />
-    <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\Capt.cs">
       <SubType>Code</SubType>
     </Compile>

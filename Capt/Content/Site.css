@@ -1,0 +1,692 @@
+﻿@import url(http://fonts.googleapis.com/css?family=Comfortaa);
+body {
+    background-color: #ffffff;
+    font-size: .85em;
+    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    color: #696969;
+}
+a img 
+{
+	border: none;
+}
+a:link {
+    color: #034af3;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #505abc;
+}
+
+a:hover {
+    color: #1d60ff;
+    text-decoration: none;
+}
+
+a:active {
+    color: #12eb87;
+}
+
+p, ul {
+    margin-bottom: 20px;
+    line-height: 1.6em;
+}
+
+header,
+footer,
+nav,
+section {
+    display: block;
+}
+
+/* HEADINGS   
+----------------------------------------------------------*/
+h1, h2, h3, h4, h5, h6 {
+    font-size: 1.5em;
+    color: #444;
+}
+
+h1 {
+    font-size: 2em;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+h2 {
+    padding: 0 0 10px 0;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+h4 {
+    font-size: 1.1em;
+}
+
+h5, h6 {
+    font-size: 1em;
+}
+
+/* PRIMARY LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+/* you can specify a greater or lesser percentage for the 
+page width. Or, you can specify an exact pixel width. */
+.page {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+header, #header {
+    position: relative;
+    border-bottom: 1px #5C87B2 solid;
+}
+
+header h1, #header h1 {
+    padding: 5px 0;
+    margin: 0;
+    border: none;
+    font-size: 32px !important;
+    font-family: 'Comfortaa', cursive;
+    letter-spacing: 15px;
+}
+
+#main 
+{
+	margin-top: 15px;
+    border-radius: 4px 0 0 0;
+    -webkit-border-radius: 4px 0 0 0;
+    -moz-border-radius: 4px 0 0 0;
+}
+
+footer, 
+#footer {
+    color: #999;
+    padding: 10px 0;
+    text-align: center;
+    line-height: normal;
+    margin: 0 0 30px 0;
+    font-size: .9em;
+    border-radius: 0 0 4px 4px;
+    -webkit-border-radius: 0 0 4px 4px;
+    -moz-border-radius: 0 0 4px 4px;
+}
+
+/* TAB MENU   
+----------------------------------------------------------*/
+.rss_link
+{
+	font-size: 50%;
+}
+#pictures_or_captions_menu, #paging_menu
+{
+	float: none;
+	text-align: left;
+	font-size: 150%;
+	padding: 0px;
+	margin-bottom: 15px;
+}
+#pictures_or_captions_menu li
+{
+	margin-left: 15px;
+}
+#pictures_or_captions_menu li a
+{
+	color: #999999;
+}
+#pictures_or_captions_menu li a:hover
+{
+	color: #ffffff;
+}
+#topmenu 
+{
+	float: right;
+}
+ul.menu {
+ 
+    position: relative;
+    margin: 0;
+    text-align: right;
+}
+
+ul.menu li {
+    display: inline;
+    list-style: none;
+    border-right: 1px solid #999;
+    margin: 0px;
+    padding-left: 1px;
+    padding-right: 5px;
+    color: #444;
+}
+#topmenu_score
+{
+	border: none;
+	margin-right: 50px;
+}
+ul.menu li:last-child 
+{
+	border: 0px;
+}
+
+ul.menu li a, a.caption_list_control {
+    text-decoration: none;
+    background-color: #fff;
+    color: #444;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+ul.menu li a:hover, ul.menu li a:active, a.caption_list_control:hover, .comment_author a:hover, a.previous_next_link:hover {
+    background-color: #e8eef4;
+    text-decoration: none;
+    color: #fff;
+    background-color: #999;
+}
+
+ul.menu li.selected a {
+    background-color: #e8eef4;
+    color: #fff;
+    background-color: #999;
+}
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+fieldset {
+    border: 1px solid #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+input[type="text"], 
+input[type="password"] {
+    border: 1px solid #ccc;
+    padding: 2px;
+    font-size: 1.2em;
+    color: #444;
+    width: 200px;
+}
+
+select {
+    border: 1px solid #ccc;
+    padding: 2px;
+    font-size: 1.2em;
+    color: #444;
+}
+
+input[type="submit"] {
+    font-size: 1.2em;
+    padding: 5px;
+}
+
+/* TABLE
+----------------------------------------------------------*/
+
+table {
+    border: solid 1px #e8eef4;
+    border-collapse: collapse;
+}
+
+table td {
+    padding: 5px;
+    border: solid 1px #e8eef4;
+}
+
+table th {
+    padding: 6px 5px;
+    text-align: left;
+    background-color: #e8eef4;
+    border: solid 1px #e8eef4;
+}
+
+/* MISC  
+----------------------------------------------------------*/
+.clear {
+    clear: both;
+}
+
+.error {
+    color: Red;
+}
+
+div#title {
+    display: block;
+    float: left;
+    text-align: left;
+}
+div#title a 
+{
+	text-decoration: none;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-error {
+    color: #ff0000;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+/* Styles for editor and display helpers
+----------------------------------------------------------*/
+.display-label, 
+.editor-label {
+    margin: 1em 0 0 0;
+}
+
+.display-field, 
+.editor-field {
+    margin: 0.5em 0 0 0;
+}
+
+.text-box {
+    width: 30em;
+}
+
+.text-box.multi-line {
+    height: 6.5em;
+}
+
+.tri-state {
+    width: 6em;
+}
+
+
+
+
+/* OpenID Login
+----------------------------------------------------------*/
+#openid_btns 
+{
+    width: 600px;
+}
+
+
+a.openid_large_btn:focus {
+	-moz-outline-style: none;
+}
+
+.openid_selected {
+	border: 4px solid #DDD;
+}
+
+/* Image page
+----------------------------------------------------------*/
+
+#main_image_container
+{
+	display: inline-block;
+	background-color: #F1F1F1; 
+	padding: 5px;
+	text-align: left;
+}
+
+
+#main_image_upload_note 
+{
+	float: left;
+}
+
+#main_image_attribution
+{
+	font-size: 80%;
+}
+#main_image_attribution img, #main_image_license img
+{
+	margin-bottom: -3px;
+}
+#main_image_license 
+{
+	float: right;
+}
+
+#main_image_captions_container
+{
+	clear: both;
+}
+
+/* Caption stuff
+----------------------------------------------------------*/
+
+.prefilled_hint, input.prefilled_hint
+{
+	color: #999999;
+}
+#picture_captions
+{
+	width: 100%;
+}
+
+#picture_captions, #picture_captions td
+{
+	border: none;
+
+}
+#picture_captions_gutter
+{
+	width: 100px;
+}
+#picture_captions tr
+{
+	vertical-align: top;
+}
+#picture_captions_image_cell
+{
+	width: 500px;
+}
+#caption_details_image_cell
+{
+	width: 600px;
+}
+#CaptionText 
+{
+	width: 100%; 
+	min-height: inherit;
+	height: 30px;
+	border-radius: 4px;
+	font-size: 25px;
+	border: 1px solid #CCCCCC;
+	margin-bottom: 5px;
+}
+
+#CaptionText.expanded
+{
+	height: 150px;
+}
+
+#CaptionText_counter
+{
+	float: right;
+}
+
+#caption_anonymous_control_container 
+{
+	float: left;
+}
+
+#caption_submit_control_container 
+{
+	float: right;
+}
+
+#caption_list
+{
+	list-style: none;
+	list-style-position: inside;
+	padding: 0px;
+}
+
+#caption_list li
+{
+	margin-bottom: 20px;
+	color: #444444;
+	margin-left: 40px;
+	
+}
+
+p.caption_text
+{
+	font-size: 150%;
+	margin-bottom: 5px;
+}
+
+#caption_list li span.caption_footer, a.secondary_caption_list_control
+{
+	color: #999999;
+}
+
+.caption_vote_control_container
+{
+	float: left;
+	text-align: center;
+	padding-top: 10px;
+	margin-left: -40px;
+}
+a.secondary_caption_list_control
+{
+	margin-left: 15px;
+	font-size: 80%;
+}
+
+img.vote_arrow
+{
+	background-color: #999999;
+}
+
+img.highlighted
+{
+	background-color: #ff5a5a;
+}
+#picture_vote_control_container
+{
+	text-align: center; 
+	float: left; 
+	padding-top: 25px;
+	margin-right: 15px;
+}
+.large_vote_points 
+{
+	font-size: 300%;
+	margin-bottom: 5px;
+}
+.vote_points 
+{
+	color: #999999;
+}
+
+.small_vote_points
+{
+	font-size: 200%;
+	margin-bottom: 5px;
+	width: 40px;
+}
+#sort_order_form
+{
+	clear: both;
+	margin-bottom: 5px;
+}
+#sort_order 
+{
+	margin-top: 10px;
+}
+#add_this
+{
+	float: right;
+	margin-top: 13px;
+	margin-left: 15px;
+	width: 140px;
+}
+#caption_detail_add_this
+{
+	margin-left: 40px;
+}
+#sort_order
+{
+	float: right; 
+	font-size: 80%;
+}
+
+div.caption_comments ul.caption_comment_list
+{
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+	font-size: 80%;
+}
+#caption_list div.caption_comments ul.caption_comment_list li
+{
+	margin: 0px;
+	margin-bottom: 10px;
+	margin-left: 15px;
+}
+.caption_comment_text
+{
+	width: 90%; 
+	height: 30px;
+	margin-left: 15px;
+	
+}
+.comment_text 
+{
+	display: block;
+}
+.comment_author, .comment_timestamp
+{
+	color: #999999;
+}
+.comment_author a
+{
+	color: #444444;
+	text-decoration: none;
+}
+.comment_save_button
+{
+	margin-left: 15px;
+}
+.caption_comment_text_counter
+{
+	float: right;
+}
+a.caption_text_link, a.caption_text_link:link, a.caption_text_link:active, a.previous_next_link
+{
+	color: #444444;
+	text-decoration: none;
+}
+
+
+/* Main picture list stuff
+----------------------------------------------------------*/
+.previous_link
+{
+	float left;
+}
+.next_link 
+{
+	float: right;
+}
+#picture_index_table 
+{
+	border: none;
+}
+.flickr_attribution_icon
+{
+	margin-bottom: -3px;
+}
+
+#picture_index_table td 
+{
+	border: none;
+	vertical-align: top;
+}
+#picture_index_table td.picture_list_image_cell 
+{
+	padding-bottom: 40px;
+	padding-right: 20px;
+	white-space: nowrap;
+}
+#picture_index_table td.picture_list_voting_cell
+{
+	text-align: center; 
+	padding-top: 10px;
+}
+#picture_index_table td.picture_list_info_cell
+{
+	padding-left: 25px;
+}
+div.picture_list_image_container 
+{
+	display: inline-block;
+	background-color: #F1F1F1; 
+	padding: 5px;
+}
+img.picture_list_image
+{
+	max-height: 100px;
+}
+td.picture_list_image_cell 
+{
+	text-align: right;
+}
+a.picture_index_link 
+{
+	font-size: 200%;
+	color: #444444;
+	text-decoration: none;
+}
+a.picture_index_link:hover 
+{
+	border-bottom: 3px solid #444444;
+}
+.picture_list_item_footer
+{
+	line-height: 175%;
+	color: #999999;
+}
+.picture_list_attribution
+{
+	margin-right: 10px;
+}
+.user_caption_list_picture_attribution
+{
+	font-size: 80%;
+}
+img.picture_list_license
+{
+	vertical-align: middle;
+}
+ul.menu a.admin_option
+{
+	color: #ff5a5a;
+}
+ul.menu a.admin_option:hover, .admin_note
+{
+	color: #fff;
+	background-color: #ff5a5a;
+}	
+.admin_note
+{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+#scoreboard
+{
+	float: right;
+}
+#scoreboard ol li
+{
+	margin-bottom: 5px;
+}
+#scoreboard .scoreboard_points
+{
+	font-size: 80%;
+	margin-left: 10px;
+}
+#scoreboard ol
+{
+	list-style-position: inside;
+	padding: 0px;
+}

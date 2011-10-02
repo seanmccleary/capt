@@ -1,0 +1,24 @@
+﻿<ul class="menu" id="pictures_or_captions_menu">
+    <li>
+        @if (ViewContext.RouteData.Values["Controller"].ToString() == "PictureCaptions")
+        {
+            @:pictures
+        }
+        else
+        {
+            @Html.ActionLink("pictures", "Index", "PictureCaptions", null, null)
+        }
+        @Html.ActionLink("(rss)", "IndexRss", "PictureCaptions", new { }, new { @class = "rss_link" })
+    </li>
+    <li>
+        @if (ViewContext.RouteData.Values["Controller"].ToString() == "CaptionForPicture")
+        {
+            @:captions
+        }
+        else
+        {
+            @Html.ActionLink("captions", "Index", "CaptionForPicture", null, null)
+        }
+        @Html.ActionLink("(rss)", "IndexRss", "CaptionForPicture", new { }, new { @class = "rss_link" })
+    </li>
+</ul>

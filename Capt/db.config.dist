@@ -1,0 +1,4 @@
+﻿<!-- Put in your connection string and rename to db.config -->
+<connectionStrings>
+	<add name="capt" connectionString="Server=192.168.195.128; Database=Capt; Uid=captuser; Pwd=capt" />
+</connectionStrings>

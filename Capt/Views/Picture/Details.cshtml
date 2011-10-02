@@ -1,0 +1,90 @@
+﻿@model Capt.Models.Picture
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Picture</legend>
+
+    <div class="display-label">UpVotes</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.UpVotes)
+    </div>
+
+    <div class="display-label">DownVotes</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.DownVotes)
+    </div>
+
+    <div class="display-label">Score</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Score)
+    </div>
+
+    <div class="display-label">Activates</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Activates)
+    </div>
+
+    <div class="display-label">AdminNote</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AdminNote)
+    </div>
+
+    <div class="display-label">Attribution</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Attribution)
+    </div>
+
+    <div class="display-label">AttributionUrl</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AttributionUrl)
+    </div>
+
+    <div class="display-label">CreateEventId</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CreateEventId)
+    </div>
+
+    <div class="display-label">Guid</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Guid)
+    </div>
+
+    <div class="display-label">IsNSFW</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsNSFW)
+    </div>
+
+    <div class="display-label">IsPrivate</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsPrivate)
+    </div>
+
+    <div class="display-label">IsVisible</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsVisible)
+    </div>
+
+    <div class="display-label">LicenseId</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.LicenseId)
+    </div>
+
+    <div class="display-label">Url</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Url)
+    </div>
+
+    <div class="display-label">UserId</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.UserId)
+    </div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

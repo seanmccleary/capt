@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Capt.Models.CaptionForPictureViewModel>
+
+@{
+    ViewBag.Title = "Latest Captions";
+}
+
+<script src="@Url.Content("~/Scripts/CaptionInput.js")" type="text/javascript"></script>
+
+<div id="scoreboard">
+    @Html.Partial("~/Views/User/UserForScoreBoardPartial.cshtml", ViewData["RankedUsers"])
+</div>
+
+@Html.Partial("~/Views/Shared/PictureCaptionMenuPartial.cshtml")
+
+<table id="picture_index_table">
+
+    @foreach (var item in Model) {
+        <tr>
+			<td class="picture_list_image_cell">
+				<div class="picture_list_image_container">
+					<a href="@Url.Action("Create", "PictureCaptions", new { pictureId = item.Picture.Id })">
+						<img class="picture_list_image" src="@item.Picture.Url" />
+					</a>
+				</div>
+                
+                @if (!String.IsNullOrWhiteSpace(item.Picture.Attribution))
+                {
+                    <br /><span class="user_caption_list_picture_attribution">@Html.Raw(item.Picture.Attribution)</span>
+                }
+                <br /><a href="@item.Picture.License.InfoUrl"><img src="@Html.Raw(item.Picture.License.ImageUrl)" /></a>
+                
+
+            </td>
+            <td style="padding-left: 40px;">
+                @Html.Partial("~/Views/CaptionForPicture/DetailsPartial.cshtml", item)
+            </td>
+        </tr>
+    }
+
+</table>
+

@@ -1,0 +1,164 @@
+﻿@using Capt.Helpers;
+
+@model Capt.Models.CaptionForPictureViewModel
+
+<div class="vote_control_container caption_vote_control_container">
+    @if (!Model.IsViewingUserAuthor)
+    {
+        var UpArrowClasses = new List<String>() { "vote_arrow", "up_arrow" };
+        if (!Request.IsAuthenticated) { UpArrowClasses.Add("requires_login"); }
+        if (Model.IsUpVotedByViewingUser) { UpArrowClasses.Add("highlighted"); }
+        if (ViewBag.IsUserBelowThreshold) { UpArrowClasses.Add("below_threshold"); }
+                    
+        @Ajax.ActionImageLink(Url.Content("~/Content/images/arrow-up-small.png"), "Vote this caption up!",
+            "CreateForCaption", "Vote", new { captionId = Model.Id, isUpvote = true },
+            new AjaxOptions { UpdateTargetId = "caption_points_" + Model.Id },
+            new Dictionary<string, string>() { { "class", String.Join(" ", UpArrowClasses.ToList()) } })
+    }
+                
+    <div id="caption_points_@(Model.Id)" class="vote_points small_vote_points">@Model.Score</div>
+                
+    @if (!Model.IsViewingUserAuthor)
+    {
+        var DownArrowClasses = new List<String>() { "vote_arrow", "down_arrow" };
+        if (!Request.IsAuthenticated) { DownArrowClasses.Add("requires_login"); }
+        if (Model.IsDownVotedByViewingUser) { DownArrowClasses.Add("highlighted"); }
+        if (ViewBag.IsUserBelowThreshold) { DownArrowClasses.Add("below_threshold"); }
+                    
+        @Ajax.ActionImageLink(Url.Content("~/Content/images/arrow-down-small.png"), "Vote this caption down!",
+            "CreateForCaption", "Vote", new { captionId = Model.Id, isUpvote = false },
+            new AjaxOptions { UpdateTargetId = "caption_points_" + Model.Id },
+            new Dictionary<string, string>() { { "class", String.Join(" ", DownArrowClasses.ToList()) } })
+    }
+</div>
+
+<p class="caption_text">
+    @if (ViewBag.AreMoreCaptionsLinksShown)
+    {
+        @Html.ActionLink(Model.Text, "Create", "PictureCaptions", new { pictureId = Model.Picture.Id }, new { @class = "caption_text_link" })
+    }
+    else
+    {
+        @Html.DisplayFor(modelItem => Model.Text)
+    }
+</p>
+
+<span class="caption_footer">
+    @Html.TimeSince(Model.Created)
+
+    @if (ViewBag.AreCaptionAuthorLinksShown)
+    {
+        @:by
+        if (Model.IsAnonymous)
+        {
+            @:Anonymous
+        }
+        else
+        {
+			@Html.ActionLink(Model.Author, "IndexByUser", "CaptionForPicture", new { userName = Model.Author }, new { @class = "caption_list_control" }) 
+            @:(@Model.AuthorPoints points)
+        }
+    }
+
+    @if (ViewBag.AreMoreCaptionsLinksShown)
+    {
+        @Html.ActionLink("more captions for this picture", "Create", "PictureCaptions", new { pictureId = Model.Picture.Id }, new { @class = "caption_list_control secondary_caption_list_control" })
+    }
+    @if (ViewBag.ArePermalinksShown)
+    {
+        @Html.ActionLink("permalink", "CaptionDetails", "PictureCaptions", new { captionId = Model.Id }, new { @class = "caption_list_control secondary_caption_list_control" })
+    }
+    <a href="" onclick="$('#caption_comments_@(Model.Id)').slideDown(); return false;" class="caption_list_control secondary_caption_list_control">
+        @if (Model.Comments.Count == 0)
+        {
+            @:add comment
+        }
+        else
+        {
+            @Model.Comments.Count @(Model.Comments.Count == 1 ? " comment" : " comments")
+        }
+    </a>
+
+</span>
+<div class="caption_comments" id="caption_comments_@(Model.Id)" style="display: none;">
+
+    <div id="caption_comment_text_@(Model.Id)">
+        <ul class="caption_comment_list">
+            @foreach (var comment in Model.Comments)
+            {
+                <li>
+                    <span class="comment_text">@comment.Text</span>
+                    <span class="comment_timestamp">@Html.TimeSince(comment.Event.Datetime)</span>
+                    <span class="comment_author">
+                        by 
+                        @if (!String.IsNullOrWhiteSpace(comment.User.Name))
+                        {
+                            @Html.ActionLink(comment.User.Name, "IndexByUser", "CaptionForPicture", new { }, new { userName = comment.User.Name } );
+                        }
+                        else
+                        {
+                            @:Anonymous   
+                        }
+                    </span>
+                    
+                </li>
+            }
+        </ul>
+    </div>
+
+    @using (Ajax.BeginForm("CreateForCaption", "Comment", new { captionId = Model.Id },
+        new AjaxOptions { 
+            UpdateTargetId = "caption_comment_text_" + Model.Id, 
+            OnComplete = "Capt.CommentPosted('caption_comments_" + Model.Id + "');",
+            OnFailure = "Capt.CommentNotPosted('caption_comments_" + Model.Id + "');",
+            OnBegin = "Capt.CommentPostBegin('caption_comments_" + Model.Id + "');"
+        })) 
+    {
+        var textareaClasses = new List<String>();
+        var buttonClasses = new List<String>();
+        
+        textareaClasses.Add("caption_comment_text");
+        buttonClasses.Add("comment_save_button");
+        
+        if (!Request.IsAuthenticated) 
+        { 
+            textareaClasses.Add("requires_login");
+            buttonClasses.Add("requires_login"); 
+        }
+        
+        <textarea id="caption_comment_text_@(Model.Id)" class="@(String.Join(" ", textareaClasses))" name="text"></textarea>
+        <br />
+        <span class="caption_comment_text_counter" id="caption_comment_text_@(Model.Id)_counter">140</span>
+        <input class="@(String.Join(" ", buttonClasses))" type="submit" value="Say It" />
+     }
+     <a href="" onclick="$('#caption_comments_@(Model.Id)').slideUp(); return false;" class="caption_list_control secondary_caption_list_control">
+        hide comment stuff
+     </a>
+</div>
+@if (ViewBag.IsAdminStuffShown)
+{
+    if (!String.IsNullOrWhiteSpace(Model.AdminNote))
+    {
+        <br /><span class="admin_note">@Model.AdminNote</span>
+    }
+
+    if (!Model.IsVisible || Model.IsAuthorLocked)
+    {
+        <br />
+        if (!Model.IsVisible)
+        {    
+            <span class="admin_note">invisible</span>
+        }
+
+        if (Model.IsAuthorLocked)
+        {
+            <span class="admin_note">user locked</span>
+        }
+    }
+                    
+    <ul class="menu">
+        <li>@Html.ActionLink("edit", "Edit", "Caption", new { id = Model.Id }, new { @class = "admin_option" })</li>
+        <li>@Html.ActionLink("details", "Details", "Caption", new { id = Model.Id }, new { @class = "admin_option" })</li>
+        <li>@Html.ActionLink("delete", "Delete", "Caption", new { id = Model.Id }, new { @class = "admin_option" })</li>
+    </ul>
+}

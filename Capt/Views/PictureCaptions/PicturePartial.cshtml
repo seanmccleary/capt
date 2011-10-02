@@ -1,0 +1,89 @@
+﻿@using Capt.Helpers;
+@model Capt.Models.PictureCaptionsViewModel
+
+<div id="picture_vote_control_container" class="vote_control_container">
+    @if (!Model.IsViewerUploader)
+    {
+        var UpArrowClasses = new List<String>() { "vote_arrow", "up_arrow" };
+        if (!Request.IsAuthenticated) { UpArrowClasses.Add("requires_login"); }
+        if (Model.IsVotedUpByViewer) { UpArrowClasses.Add("highlighted"); }
+        if (ViewBag.IsUserBelowThreshold) { UpArrowClasses.Add("below_threshold"); }
+            
+        @Ajax.ActionImageLink(Url.Content("~/Content/images/arrow-up-large.png"), "Vote this picture up!",
+            "CreateForPicture", "Vote", new { pictureId = Model.PictureId, isUpvote = true },
+            new AjaxOptions { UpdateTargetId = "picture_points" },
+            new Dictionary<string, string>() { { "class", String.Join(" ", UpArrowClasses.ToList()) } })                    
+    }
+    <div class="vote_points large_vote_points" id="picture_points">@Model.PictureScore</div>
+    @if (!Model.IsViewerUploader)
+    {
+        var DownArrowClasses = new List<String>() { "vote_arrow", "down_arrow" };
+        if (!Request.IsAuthenticated) { DownArrowClasses.Add("requires_login"); }
+        if (Model.IsVotedDownByViewer) { DownArrowClasses.Add("highlighted"); }
+        if (ViewBag.IsUserBelowThreshold) { DownArrowClasses.Add("below_threshold"); }
+            
+        @Ajax.ActionImageLink(Url.Content("~/Content/images/arrow-down-large.png"), "Vote this picture down!",
+            "CreateForPicture", "Vote", new { pictureId = Model.PictureId, isUpvote = false },
+            new AjaxOptions { UpdateTargetId = "picture_points" },
+            new Dictionary<string, string>() { { "class", String.Join(" ", DownArrowClasses.ToList()) } })
+    }
+</div>
+<div id="main_image_container">
+    @if (!String.IsNullOrWhiteSpace(Model.PictureAttributionUrl))
+    {
+        <a href="@Model.PictureAttributionUrl" target="_new">
+            <img id="main_image" src="@Model.PictureUrl" /></a>
+    }
+    else
+    {
+        <img id="main_image" src="@Model.PictureUrl" />
+    }
+    <br />
+    @if (!String.IsNullOrWhiteSpace(Model.PictureAttribution))
+    {
+        <span id="main_image_attribution">@Html.Raw(Model.PictureAttribution)</span>
+        <span id="main_image_license">@Html.Raw(Model.LicenseLink)</span>
+    }
+</div>
+@if (ViewBag.IsAdminStuffShown)
+{
+    if (Model.Activates > DateTime.UtcNow || !Model.IsVisible || Model.IsPrivate
+        || !String.IsNullOrWhiteSpace(Model.AdminNote)
+        || Model.IsAuthorLocked
+        || !String.IsNullOrWhiteSpace(Model.AuthorAdminNote)
+        )
+    {
+    <p>
+        @if (!String.IsNullOrWhiteSpace(Model.AdminNote))
+        {
+            <span class="admin_note">@Model.AdminNote</span><br />
+        }
+        @if (!String.IsNullOrWhiteSpace(Model.AuthorAdminNote))
+        {
+            <span class="admin_note">user: @Model.AuthorAdminNote</span><br />
+        }
+        @if (Model.Activates > DateTime.UtcNow)
+        {
+            <span class="admin_note">activates on @Model.Activates.ToString()</span>
+        }
+        @if (!Model.IsVisible)
+        {
+            <span class="admin_note">invisible</span>
+        }
+        @if (Model.IsPrivate)
+        {
+            <span class="admin_note">private</span>
+        }
+        @if (Model.IsAuthorLocked)
+        {
+            <span class="admin_note">user locked</span>
+        }
+    </p>
+    }
+            
+    <ul class="menu">
+        <li>@Html.ActionLink("edit", "Edit", "Picture", new { id = Model.PictureId }, new { @class = "admin_option" })</li>
+        <li>@Html.ActionLink("details", "Details", "Picture", new { id = Model.PictureId }, new { @class = "admin_option" })</li>
+        <li>@Html.ActionLink("delete", "Delete", "Picture", new { id = Model.PictureId }, new { @class = "admin_option" })</li>
+    </ul>
+}

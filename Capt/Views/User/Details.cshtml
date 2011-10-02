@@ -1,0 +1,56 @@
+﻿@model Capt.Models.User
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>User</legend>
+
+    <div class="display-label">AdminNote</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AdminNote)
+    </div>
+
+    <div class="display-label">CreateEventId</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CreateEventId)
+    </div>
+
+    <div class="display-label">EmailAddress</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.EmailAddress)
+    </div>
+
+    <div class="display-label">Guid</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Guid)
+    </div>
+
+    <div class="display-label">IsAdmin</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsAdmin)
+    </div>
+
+    <div class="display-label">IsEmailAddressVerified</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsEmailAddressVerified)
+    </div>
+
+    <div class="display-label">IsLocked</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsLocked)
+    </div>
+
+    <div class="display-label">Name</div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Name)
+    </div>
+
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

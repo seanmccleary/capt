@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "About " + ViewBag.SiteName;
+}
+
+<h2>About @ViewBag.SiteName</h2>
+
+<p>
+    @ViewBag.SiteName is a website where new images are posted at regular intervals, for which users are invited to supply captions.
+    The idea was <strike>ripped off from</strike> inspired by <a href="http://www.spinnwebe.com/">SpinnWebe</a>'s
+    sadly-defunct <a href="http://www.spinnwebe.com/iadl/">It's a Dysfunctional Life</a>.
+</p>
+
+<p>
+    @ViewBag.SiteName only uses photos whose authors have licensed them for use by others. If you find your photo here and would 
+    rather it weren't, please @Html.ActionLink("contact " + ViewData["SiteName"], "Contact", "Info") to have it removed.
+</p>
+
+<p>
+    @ViewBag.SiteName is supposed to be fun.
+</p>

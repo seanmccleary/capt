@@ -1,0 +1,75 @@
+﻿@model Capt.Models.User
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>User</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.AdminNote)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.AdminNote)
+            @Html.ValidationMessageFor(model => model.AdminNote)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.EmailAddress)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.EmailAddress)
+            @Html.ValidationMessageFor(model => model.EmailAddress)
+        </div>
+
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsAdmin)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsAdmin)
+            @Html.ValidationMessageFor(model => model.IsAdmin)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsEmailAddressVerified)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsEmailAddressVerified)
+            @Html.ValidationMessageFor(model => model.IsEmailAddressVerified)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsLocked)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IsLocked)
+            @Html.ValidationMessageFor(model => model.IsLocked)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Name)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

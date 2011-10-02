@@ -1,0 +1,166 @@
+﻿@using Capt.Helpers;
+@model IEnumerable<Capt.Models.PictureCaptionsViewModel>
+
+@{
+    ViewBag.Title = "Picture Caption Contests @ " + ViewBag.SiteName;
+}
+<script src="@Url.Content("~/Scripts/CaptionInput.js")" type="text/javascript"></script>
+
+<div id="scoreboard">
+
+    @if (!String.IsNullOrWhiteSpace(ViewBag.NextPictureActivates))
+    {
+        
+        <script language="JavaScript">
+            TargetDate = "@ViewBag.NextPictureActivates";
+            CountActive = true;
+            CountStepper = -1;
+            LeadingZero = true;
+            DisplayFormat = "next picture in %%H%% hours, %%M%% minutes, %%S%% seconds";
+            FinishMessage = "Reload your browser!";
+        </script>
+        <script language="JavaScript" src="http://scripts.hashemian.com/js/countdown.js"></script>        
+    }
+
+    @Html.Partial("~/Views/User/UserForScoreBoardPartial.cshtml", ViewData["RankedUsers"])
+</div>
+
+@Html.Partial("~/Views/Shared/PictureCaptionMenuPartial.cshtml")
+
+<table id="picture_index_table">
+	@foreach (var item in Model) {
+	
+		<tr>
+			<td class="picture_list_image_cell">
+				<div class="picture_list_image_container">
+					<a href="@Url.Action("Create", "PictureCaptions", new { pictureId = item.PictureId })">
+						<img class="picture_list_image" src="@item.PictureUrl" />
+					</a>
+				</div>
+                @if (ViewBag.IsAdminStuffShown)
+                {
+                    <ul class="menu">
+                        <li>@Html.ActionLink("edit", "Edit", "Picture", new { id = item.PictureId }, new { @class = "admin_option" })</li>
+                        <li>@Html.ActionLink("details", "Details", "Picture", new { id = item.PictureId }, new { @class = "admin_option" })</li>
+                        <li>@Html.ActionLink("delete", "Delete", "Picture", new { id = item.PictureId }, new { @class = "admin_option" })</li>
+                    </ul>
+                }
+			</td>
+            <td class="vote_control_container picture_list_voting_cell">
+                @if (!item.IsViewerUploader)
+                {
+                    var UpArrowClasses = new List<String>() { "vote_arrow", "up_arrow" };
+                    if (!Request.IsAuthenticated) { UpArrowClasses.Add("requires_login"); }
+                    if (item.IsVotedUpByViewer) { UpArrowClasses.Add("highlighted"); }
+                    if (ViewBag.IsUserBelowThreshold) { UpArrowClasses.Add("below_threshold"); }
+            
+                    @Ajax.ActionImageLink(Url.Content("~/Content/images/arrow-up-small.png"), "Vote this picture up!",
+                        "CreateForPicture", "Vote", new { pictureId = item.PictureId, isUpvote = true },
+                        new AjaxOptions { UpdateTargetId = "picture_points_" + item.PictureId },
+                        new Dictionary<string, string>() { { "class", String.Join(" ", UpArrowClasses.ToList()) } })                    
+                }
+
+                <div class="vote_points small_vote_points" id="picture_points_@(item.PictureId)">@item.PictureScore</div>
+
+                @if (!item.IsViewerUploader)
+                {
+                    var DownArrowClasses = new List<String>() { "vote_arrow", "down_arrow" };
+                    if (!Request.IsAuthenticated) { DownArrowClasses.Add("requires_login"); }
+                    if (item.IsVotedDownByViewer) { DownArrowClasses.Add("highlighted"); }
+                    if (ViewBag.IsUserBelowThreshold) { DownArrowClasses.Add("below_threshold"); }
+            
+                    @Ajax.ActionImageLink(Url.Content("~/Content/images/arrow-down-small.png"), "Vote this picture down!",
+                        "CreateForPicture", "Vote", new { pictureId = item.PictureId, isUpvote = false },
+                        new AjaxOptions { UpdateTargetId = "picture_points_" + item.PictureId },
+                        new Dictionary<string, string>() { { "class", String.Join(" ", DownArrowClasses.ToList()) } })
+                }
+            </td>
+			<td class="picture_list_info_cell">
+				@Html.ActionLink(
+                    item.Captions.Count() + (item.Captions.Count() == 1 ? " caption" : " captions"), 
+                    "Create", "PictureCaptions", new { pictureId = item.PictureId }, new { @class = "picture_index_link" })
+                    
+                    @if (item.CaptionAuthorCount > 0)
+                    {
+                        <span>by @item.CaptionAuthorCount @(item.CaptionAuthorCount == 1 ? "captrato" : "captrati")</span>
+                    }
+                    <br />
+
+                <span class="picture_list_item_footer">
+                    added @Html.TimeSince(item.Activates).
+
+				    @if (item.UserName != null && !String.IsNullOrWhiteSpace(item.UserName) && !item.IsUserNameHinted)
+				    {
+					    @: by @item.UserName.
+                    }
+                    <br />
+                    @if (!String.IsNullOrWhiteSpace(item.PictureAttribution))
+                    {
+                        <span class="picture_list_attribution">@Html.Raw(item.PictureAttribution)</span>
+                    }
+                    @Html.Raw(item.LicenseLink)
+
+                    @if (ViewBag.IsAdminStuffShown && 
+                            item.Activates > DateTime.UtcNow || !item.IsVisible || item.IsPrivate
+                            || !String.IsNullOrWhiteSpace(item.AdminNote)
+                            || item.IsAuthorLocked || !String.IsNullOrWhiteSpace(item.AuthorAdminNote)
+                    )
+                    {
+
+                        if (!String.IsNullOrWhiteSpace(item.AdminNote))
+                        {
+                            <span class="admin_note">@item.AdminNote</span><br />
+                        }
+
+                        if (!String.IsNullOrWhiteSpace(item.AuthorAdminNote))
+                        {
+                            <span class="admin_note">user note: @item.AuthorAdminNote</span><br />
+                        }
+
+                        if (item.Activates > DateTime.UtcNow)
+                        {
+                            <span class="admin_note">activates on @item.Activates.ToString()</span>
+                        }
+
+                        if (!item.IsVisible)
+                        {
+                            <span class="admin_note">invisible</span>
+                        }
+
+                        if (item.IsPrivate)
+                        {
+                            <span class="admin_note">private</span>
+                        }
+
+                        if (item.IsAuthorLocked)
+                        {
+                            <span class="admin_note">user locked</span>
+                        }
+
+
+                    }
+                    
+                </span>
+			</td>
+		</tr>	
+	}
+    <tr>
+        <td colspan="2"></td>
+        <td>
+        
+<ul class="menu" id="paging_menu">
+    @if( ViewBag.IsPreviousPageAvailable ) 
+    {
+        <li>@Html.ActionLink("← newer", "Index", new { start = ViewBag.PreviousPageStartsAt })</li>
+    }
+
+    @if( ViewBag.IsNextPageAvailable ) 
+    {
+        <li>@Html.ActionLink("older →", "Index", new { start = ViewBag.NextPageStartsAt })</li>
+    }
+</ul>        
+        
+        </td>
+    </tr>
+</table>
+

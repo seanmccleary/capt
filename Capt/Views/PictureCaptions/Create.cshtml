@@ -1,0 +1,106 @@
+﻿@using Capt.Helpers;
+@model Capt.Models.PictureCaptionsViewModel
+@{
+    ViewBag.Title = "Picture for " + Model.Created.ToString("dddd, MMMM dd yyyy");
+}
+<script src="@Url.Content("~/Scripts/CaptionInput.js")" type="text/javascript"></script>
+<table id="picture_captions">
+    <tr>
+        <td id="picture_captions_image_cell">
+            <div style="position: fixed;">
+                @Html.Partial("~/Views/PictureCaptions/PicturePartial.cshtml", Model)
+            </div>
+        </td>
+        <td id="picture_captions_gutter"></td>
+        <td>
+
+            @if (ViewBag.PreviousPictureId != 0)
+            {
+                @Html.ActionLink("← previous", "Create", new { pictureId = ViewBag.PreviousPictureId }, new { @class = "previous_link previous_next_link" })
+            }
+            @if (ViewBag.NextPictureId != 0)
+            {
+                @Html.ActionLink("next →", "Create", new { pictureId = ViewBag.NextPictureId }, new { @class = "next_link previous_next_link" })
+            }
+
+            @using (Html.BeginForm())
+            {
+                @Html.ValidationSummary(true)
+
+                var CaptionTextClasses = new List<String>();
+                if (ViewBag.IsCaptionTextAreaHinted) { CaptionTextClasses.Add("prefilled_hint"); }
+                if (ViewBag.IsCaptionTextAreaExpanded) { CaptionTextClasses.Add("expanded"); }
+                if (!Request.IsAuthenticated) { CaptionTextClasses.Add("requires_login"); }
+	  
+                <div class="editor-field">
+                    @Html.TextAreaFor(model => model.CaptionText, new { @class = String.Join(" ", CaptionTextClasses) })
+                    @Html.ValidationMessageFor(model => model.CaptionText)
+                </div>
+            
+                if (ViewBag.HideSecondaryControls)
+                {
+                   @:<div id="secondary_caption_controls_container" style="display: none;">
+                }
+                else
+                {
+                    @:<div id="secondary_caption_controls_container">
+                }
+            
+                    <span id="CaptionText_counter">140</span>
+	        
+                    if (Session["User"] == null || String.IsNullOrWhiteSpace((Session["User"] as Capt.Models.User).Name))
+                    {
+
+                        var UserNameClasses = new List<String>();
+                        var UserNameAttributes = new Dictionary<string, object>();
+
+                        if (ViewBag.IsUserNameHinted) { UserNameClasses.Add("prefilled_hint"); }
+                        if (!Request.IsAuthenticated) { UserNameClasses.Add("requires_login"); }
+
+                        if (Model.IsAnonymous) { UserNameAttributes.Add("disabled", "disabled"); }
+
+                        UserNameAttributes.Add("class", String.Join(" ", UserNameClasses));
+                    
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => model.UserName, UserNameAttributes)<br />
+                            @Html.ValidationMessageFor(model => model.UserName)
+                        </div>
+                    }
+                
+                    <div class="editor-field" id="caption_anonymous_control_container">
+                        @Html.EditorFor(model => model.IsAnonymous) @Html.LabelFor(model => model.IsAnonymous, "Anonymous?")
+                        @Html.ValidationMessageFor(model => model.IsAnonymous)
+                    </div>
+
+                    <p id="caption_submit_control_container"> 
+                        <input type="submit" value="Add Your Caption" /> 
+                    </p>
+                @:</div>
+            
+            }
+
+            @using (Html.BeginForm("SetSortOrder", "PictureCaptions", new { pictureId = Model.PictureId }, FormMethod.Post, new { id = "sort_order_form" }))
+            {
+                
+                <!-- AddThis Button BEGIN -->
+                <div id="add_this" class="addthis_toolbox addthis_default_style ">
+                <a class="addthis_button_preferred_1"></a>
+                <a class="addthis_button_preferred_2"></a>
+                <a class="addthis_button_preferred_3"></a>
+                <a class="addthis_button_preferred_4"></a>
+                <a class="addthis_button_compact"></a>
+                <a class="addthis_counter addthis_bubble_style"></a>
+                </div>
+                <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4e743dc90a13fff0"></script>
+                <!-- AddThis Button END -->                    
+                
+                @Html.DropDownList("sortOrder", (List<SelectListItem>)ViewData["SortOptions"], new { id = "sort_order", onchange = "form.submit();" })
+
+           
+            }
+            <div id="main_image_captions_container">
+                @Html.Partial("~/Views/CaptionForPicture/IndexPartial.cshtml", Model.Captions)
+            </div>
+        </td>
+    </tr>
+</table>

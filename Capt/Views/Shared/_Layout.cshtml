@@ -1,0 +1,118 @@
+﻿@using Capt.Models;
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+
+        <link rel="alternate" type="application/rss+xml" title="Latest Pictures (RSS 2.0)" href="@Url.Action("IndexRss", "PictureCaptions")" />
+        <link rel="alternate" type="application/rss+xml" title="Latest Captions (RSS 2.0)" href="@Url.Action("IndexRss", "CaptionForPicture")" />
+
+        <title>@ViewBag.Title</title>
+        <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+        <link href="@Url.Content("~/Content/openid.css")" rel="stylesheet" type="text/css" />
+
+        @if (ViewBag.UseMicrosoftCDN)
+        {
+            <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.4.min.js" type="text/javascript"></script>
+            <script src="http://ajax.aspnetcdn.com/ajax/mvc/3.0/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            <script src="http://ajax.microsoft.com/ajax/jquery.validate/1.5.5/jquery.validate.min.js" type="text/javascript"></script>
+            <script src="http://ajax.aspnetcdn.com/ajax/mvc/3.0/jquery.validate.unobtrusive.min.js" type="text/javascript"></script>            
+        }
+        else
+        {
+            <script src="@Url.Content("~/Scripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
+            <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+            <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+            <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+        }
+
+        @if (!String.IsNullOrWhiteSpace(ViewBag.GoogleAnalyticsId))
+        {
+            <script type="text/javascript">
+
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', '@ViewBag.GoogleAnalyticsId']);
+                _gaq.push(['_trackPageview']);
+
+                (function () {
+                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                })();
+
+            </script>
+        }
+    </head>
+    <body>
+        <div class="page">
+            <header>
+                <div id="title">
+                    <a href="/"><h1>@ViewBag.SiteName</h1></a>
+                </div>
+                <nav>
+                    <ul id="topmenu" class="menu">
+                        @if (Request.IsAuthenticated)
+                        {
+                            var user = (User)Session["User"];
+                            object routeValues = null;
+                            if (String.IsNullOrWhiteSpace(user.Name))
+                            {
+                                routeValues = new { userName = user.Id };
+                            }
+                            else
+	                        {
+                                routeValues = new { userName = user.Name };
+	                        }
+                                
+                            <li id="topmenu_score">
+                                @Html.ActionLink(
+                                    @String.Format((user.Score == 1 ? "you have {0} point" : "you have {0} points"), user.Score),
+                                    "IndexByUser", "CaptionForPicture", routeValues, new { })
+                            </li>
+                        }
+
+                        <li>@Html.ActionLink("home", "Index", "PictureCaptions")</li>
+
+                        @if (Request.IsAuthenticated)
+                        {
+                            <li>@Html.ActionLink("log off", "LogOff", "Account")</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("log on", "LogOn", "Account", new { ReturnUrl = Request.Url }, new { })</li>
+                            <li>@Html.ActionLink("sign up", "LogOn", "Account", new { ReturnUrl = Request.Url }, new { })</li>
+                        }
+
+
+
+                        @if (ViewBag.IsAdminStuffShown)
+                        {
+                            <li>@Html.ActionLink("add picture", "Create", "Picture", null, new { @class = "admin_option" })</li>
+                            <li>@Html.ActionLink("users", "Index", "User", null, new { @class = "admin_option" })</li>
+                        }
+
+					    @if (User.IsInRole("Administrator"))
+         {
+						    <li>@Html.ActionLink("toggle privileges", "TogglePrivilegeMode", "Account", new { ReturnUrl = Request.Url }, new { @class = "admin_option" })</li>
+         }
+
+                    </ul>
+                </nav>
+                <div class="clear" />
+            </header>
+            <section id="main">
+                @RenderBody()
+            </section>
+            <footer>
+                    <ul id="top_menu" class="menu">
+                        <li>@Html.ActionLink("about", "About", "Info")</li>
+                        <li>@Html.ActionLink("contact", "Contact", "Info")</li>
+                        <li>@Html.ActionLink("terms & conditions", "Conditions", "Info")</li>
+                        <li>@Html.ActionLink("privacy policy", "Privacy", "Info")</li>
+                        <li><a href="http://www.seanmccleary.info/projects/capt">powered by capt</a></li>
+                        <li><a href="http://creativecommons.org/licenses/by-sa/3.0/"><img style="vertical-align: middle;" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a></li>
+                    </ul>
+            </footer>
+        </div>
+    </body>
+</html>

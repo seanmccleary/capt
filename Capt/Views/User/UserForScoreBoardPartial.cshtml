@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Capt.Models.User>
+
+
+
+<h3>Top Captrati</h3>
+
+<ol>
+    @foreach (var item in Model) {
+
+        if (String.IsNullOrWhiteSpace(item.Name))
+        {
+            continue;
+        }
+
+        <li>
+                @Html.ActionLink(item.Name, "IndexByUser", "CaptionForPicture", new { userName = item.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@item.Score @(item.Score == 1 ? "point" : "points"))</span>
+        </li>
+    }
+</ol>

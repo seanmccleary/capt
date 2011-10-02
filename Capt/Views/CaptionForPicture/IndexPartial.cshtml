@@ -1,0 +1,10 @@
+﻿@model IEnumerable<Capt.Models.CaptionForPictureViewModel>
+
+<ul id="caption_list">
+	@foreach (var item in Model)
+	{
+		<li style="clear: both;">
+            @Html.Partial("~/Views/CaptionForPicture/DetailsPartial.cshtml", item)
+		</li>
+	}
+</ul>

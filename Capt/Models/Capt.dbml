@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<Database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Capt" EntityNamespace="Capt.Models" ContextNamespace="Capt.Models" Class="Capt" BaseType="DbLinq.Data.Linq.DataContext" Provider="MySql" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Table Name="Caption" Member="Captions">
+    <Type Name="Caption">
+      <Association Name="fk_Caption_Event1" Member="Event" Storage="_event" Type="Event" ThisKey="CreateEventId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Caption_has_Comment_Caption1" Member="CaptionComments" Storage="_captionComments" Type="CaptionComment" ThisKey="Id" OtherKey="CaptionId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Caption_Picture1" Member="Picture" Storage="_picture" Type="Picture" ThisKey="PictureId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Caption_User1" Member="User" Storage="_user" Type="User" ThisKey="UserId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Vote_has_Caption_Caption1" Member="CaptionVotes" Storage="_captionVotes" Type="CaptionVote" ThisKey="Id" OtherKey="CaptionId" DeleteRule="NO ACTION" />
+      <Column Name="AdminNote" Member="AdminNote" Storage="_adminNote" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsAnonymous" Member="IsAnonymous" Storage="_isAnonymous" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="IsVisible" Member="IsVisible" Storage="_isVisible" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="PictureId" Member="PictureId" Storage="_pictureID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Text" Member="Text" Storage="_text" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="UserId" Member="UserId" Storage="_userID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="CaptionComment" Member="CaptionComments">
+    <Type Name="CaptionComment">
+      <Association Name="fk_Caption_has_Comment_Caption1" Member="Caption" Storage="_caption" Type="Caption" ThisKey="CaptionId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Caption_has_Comment_Comment1" Member="Comment" Storage="_comment" Type="Comment" ThisKey="CommentId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="CaptionId" Member="CaptionId" Storage="_captionID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="CommentId" Member="CommentId" Storage="_commentID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="CaptionVote" Member="CaptionVotes">
+    <Type Name="CaptionVote">
+      <Association Name="fk_Vote_has_Caption_Caption1" Member="Caption" Storage="_caption" Type="Caption" ThisKey="CaptionId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Vote_has_Caption_Vote1" Member="Vote" Storage="_vote" Type="Vote" ThisKey="VoteId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="CaptionId" Member="CaptionId" Storage="_captionID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="VoteId" Member="VoteId" Storage="_voteID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="Comment" Member="Comments">
+    <Type Name="Comment">
+      <Association Name="fk_Caption_has_Comment_Comment1" Member="CaptionComments" Storage="_captionComments" Type="CaptionComment" ThisKey="Id" OtherKey="CommentId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Comment_Event1" Member="Event" Storage="_event" Type="Event" ThisKey="CreateEventId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Comment_User1" Member="User" Storage="_user" Type="User" ThisKey="UserId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="FK_ParentCommentId" Member="ParentCommentIdComment" Storage="_parentCommentIDComment" Type="Comment" ThisKey="ParentCommentId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="FK_ParentCommentId" Member="Comments" Storage="_comments" Type="Comment" ThisKey="Id" OtherKey="ParentCommentId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Picture_has_Comment_Comment1" Member="PictureComments" Storage="_pictureComments" Type="PictureComment" ThisKey="Id" OtherKey="CommentId" DeleteRule="NO ACTION" />
+      <Column Name="AdminNote" Member="AdminNote" Storage="_adminNote" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsVisible" Member="IsVisible" Storage="_isVisible" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="ParentCommentId" Member="ParentCommentId" Storage="_parentCommentID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="Text" Member="Text" Storage="_text" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="UserId" Member="UserId" Storage="_userID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="Event" Member="Events">
+    <Type Name="Event">
+      <Association Name="fk_Caption_Event1" Member="Captions" Storage="_captions" Type="Caption" ThisKey="Id" OtherKey="CreateEventId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Comment_Event1" Member="Comments" Storage="_comments" Type="Comment" ThisKey="Id" OtherKey="CreateEventId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Event_EventType1" Member="EventType" Storage="_eventType" Type="EventType" ThisKey="EventTypeId" OtherKey="ID" IsForeignKey="true" />
+      <Association Name="fk_ExternalLogin_Event1" Member="ExternalLogins" Storage="_externalLogins" Type="ExternalLogin" ThisKey="Id" OtherKey="CreateEventId" DeleteRule="NO ACTION" />
+      <Association Name="fk_OAuthToken_Event1" Member="OAuthTokens" Storage="_oaUthTokens" Type="OAuthToken" ThisKey="Id" OtherKey="CreateEventId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Picture_Event1" Member="Pictures" Storage="_pictures" Type="Picture" ThisKey="Id" OtherKey="CreateEventId" DeleteRule="NO ACTION" />
+      <Association Name="fk_User_Event1" Member="Users" Storage="_users" Type="User" ThisKey="Id" OtherKey="CreateEventId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Vote_Event1" Member="Votes" Storage="_votes" Type="Vote" ThisKey="Id" OtherKey="CreateEventId" DeleteRule="NO ACTION" />
+      <Column Name="Datetime" Member="Datetime" Storage="_datetime" Type="System.DateTime" DbType="datetime" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="EventTypeId" Member="EventTypeId" Storage="_eventTypeID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Host" Member="Host" Storage="_host" Type="System.String" DbType="varchar(100)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IPv4Address" Member="IPv4Address" Storage="_ipV4aDdress" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="EventType" Member="EventTypes">
+    <Type Name="EventType">
+      <Association Name="fk_Event_EventType1" Member="Events" Storage="_events" Type="Event" ThisKey="ID" OtherKey="EventTypeId" DeleteRule="NO ACTION" />
+      <Column Name="Description" Member="Description" Storage="_description" Type="System.String" DbType="varchar(45)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="ID" Member="ID" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="ExternalLogin" Member="ExternalLogins">
+    <Type Name="ExternalLogin">
+      <Association Name="fk_ExternalLogin_Event1" Member="Event" Storage="_event" Type="Event" ThisKey="CreateEventId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_ExternalLogin_ExternalLoginProvider1" Member="ExternalLoginProvider" Storage="_externalLoginProvider" Type="ExternalLoginProvider" ThisKey="ExternalLoginProviderId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_ExternalLogin_User1" Member="User" Storage="_user" Type="User" ThisKey="UserId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="ExternalLoginProviderId" Member="ExternalLoginProviderId" Storage="_externalLoginProviderID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Identifier" Member="Identifier" Storage="_identifier" Type="System.String" DbType="varchar(767)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="UserId" Member="UserId" Storage="_userID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="ExternalLoginProvider" Member="ExternalLoginProviders">
+    <Type Name="ExternalLoginProvider">
+      <Association Name="fk_ExternalLogin_ExternalLoginProvider1" Member="ExternalLogins" Storage="_externalLogins" Type="ExternalLogin" ThisKey="Id" OtherKey="ExternalLoginProviderId" DeleteRule="NO ACTION" />
+      <Association Name="fk_OauthTokens_ExternalLoginProvider1" Member="OAuthTokens" Storage="_oaUthTokens" Type="OAuthToken" ThisKey="Id" OtherKey="ExternalLoginProviderId" DeleteRule="NO ACTION" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Name" Member="Name" Storage="_name" Type="System.String" DbType="varchar(45)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="License" Member="Licenses">
+    <Type Name="License">
+      <Association Name="fk_Picture_License1" Member="Pictures" Storage="_pictures" Type="Picture" ThisKey="Id" OtherKey="LicenseId" DeleteRule="NO ACTION" />
+      <Column Name="Description" Member="Description" Storage="_description" Type="System.String" DbType="varchar(100)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="ImageUrl" Member="ImageUrl" Storage="_imageUrl" Type="System.String" DbType="varchar(100)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="InfoUrl" Member="InfoUrl" Storage="_infoUrl" Type="System.String" DbType="varchar(100)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="OAuthToken" Member="OAuthTokens">
+    <Type Name="OAuthToken">
+      <Association Name="fk_OauthTokens_ExternalLoginProvider1" Member="ExternalLoginProvider" Storage="_externalLoginProvider" Type="ExternalLoginProvider" ThisKey="ExternalLoginProviderId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_OauthTokens_User1" Member="User" Storage="_user" Type="User" ThisKey="UserId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_OAuthToken_Event1" Member="Event" Storage="_event" Type="Event" ThisKey="CreateEventId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Expires" Member="Expires" Storage="_expires" Type="System.DateTime" DbType="datetime" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="ExternalLoginProviderId" Member="ExternalLoginProviderId" Storage="_externalLoginProviderID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Secret" Member="Secret" Storage="_secret" Type="System.String" DbType="varchar(1024)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Token" Member="Token" Storage="_token" Type="System.String" DbType="varchar(1024)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="UserId" Member="UserId" Storage="_userID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="Picture" Member="Pictures">
+    <Type Name="Picture">
+      <Association Name="fk_Caption_Picture1" Member="Captions" Storage="_captions" Type="Caption" ThisKey="Id" OtherKey="PictureId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Picture_Event1" Member="Event" Storage="_event" Type="Event" ThisKey="CreateEventId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Picture_has_Comment_Picture1" Member="PictureComments" Storage="_pictureComments" Type="PictureComment" ThisKey="Id" OtherKey="PictureId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Picture_has_Vote_Picture1" Member="PictureVotes" Storage="_pictureVotes" Type="PictureVote" ThisKey="Id" OtherKey="PictureId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Picture_License1" Member="License" Storage="_license" Type="License" ThisKey="LicenseId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Picture_User1" Member="User" Storage="_user" Type="User" ThisKey="UserId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="Activates" Member="Activates" Storage="_activates" Type="System.DateTime" DbType="datetime" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="AdminNote" Member="AdminNote" Storage="_adminNote" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="Attribution" Member="Attribution" Storage="_attribution" Type="System.String" DbType="varchar(1024)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="AttributionUrl" Member="AttributionUrl" Storage="_attributionUrl" Type="System.String" DbType="varchar(100)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Guid" Member="Guid" Storage="_guid" Type="System.Guid" DbType="char(36)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsNSFW" Member="IsNSFW" Storage="_isNsfw" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="IsPrivate" Member="IsPrivate" Storage="_isPrivate" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="IsVisible" Member="IsVisible" Storage="_isVisible" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="LicenseId" Member="LicenseId" Storage="_licenseID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Rank" Member="Rank" Storage="_rank" Type="System.Double" DbType="double" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Url" Member="Url" Storage="_url" Type="System.String" DbType="varchar(100)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="UserId" Member="UserId" Storage="_userID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="PictureComment" Member="PictureComments">
+    <Type Name="PictureComment">
+      <Association Name="fk_Picture_has_Comment_Comment1" Member="Comment" Storage="_comment" Type="Comment" ThisKey="CommentId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Picture_has_Comment_Picture1" Member="Picture" Storage="_picture" Type="Picture" ThisKey="PictureId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="CommentId" Member="CommentId" Storage="_commentID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="PictureId" Member="PictureId" Storage="_pictureID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="PictureVote" Member="PictureVotes">
+    <Type Name="PictureVote">
+      <Association Name="fk_Picture_has_Vote_Picture1" Member="Picture" Storage="_picture" Type="Picture" ThisKey="PictureId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Picture_has_Vote_Vote1" Member="Vote" Storage="_vote" Type="Vote" ThisKey="VoteId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="PictureId" Member="PictureId" Storage="_pictureID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="VoteId" Member="VoteId" Storage="_voteID" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="User" Member="Users">
+    <Type Name="User">
+      <Association Name="fk_Caption_User1" Member="Captions" Storage="_captions" Type="Caption" ThisKey="Id" OtherKey="UserId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Comment_User1" Member="Comments" Storage="_comments" Type="Comment" ThisKey="Id" OtherKey="UserId" DeleteRule="NO ACTION" />
+      <Association Name="fk_ExternalLogin_User1" Member="ExternalLogins" Storage="_externalLogins" Type="ExternalLogin" ThisKey="Id" OtherKey="UserId" DeleteRule="NO ACTION" />
+      <Association Name="fk_OauthTokens_User1" Member="OAuthTokens" Storage="_oaUthTokens" Type="OAuthToken" ThisKey="Id" OtherKey="UserId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Picture_User1" Member="Pictures" Storage="_pictures" Type="Picture" ThisKey="Id" OtherKey="UserId" DeleteRule="NO ACTION" />
+      <Association Name="fk_User_Event1" Member="Event" Storage="_event" Type="Event" ThisKey="CreateEventId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Vote_User1" Member="Votes" Storage="_votes" Type="Vote" ThisKey="Id" OtherKey="UserId" DeleteRule="NO ACTION" />
+      <Column Name="AdminNote" Member="AdminNote" Storage="_adminNote" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="EmailAddress" Member="EmailAddress" Storage="_emailAddress" Type="System.String" DbType="varchar(100)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="Guid" Member="Guid" Storage="_guid" Type="System.Guid" DbType="char(36)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsAdmin" Member="IsAdmin" Storage="_isAdmin" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="IsEmailAddressVerified" Member="IsEmailAddressVerified" Storage="_isEmailAddressVerified" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="IsLocked" Member="IsLocked" Storage="_isLocked" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="LastLogin" Member="LastLogin" Storage="_lastLogin" Type="System.DateTime" DbType="datetime" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Name" Member="Name" Storage="_name" Type="System.String" DbType="varchar(45)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="Vote" Member="Votes">
+    <Type Name="Vote">
+      <Association Name="fk_Picture_has_Vote_Vote1" Member="PictureVotes" Storage="_pictureVotes" Type="PictureVote" ThisKey="Id" OtherKey="VoteId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Vote_Event1" Member="Event" Storage="_event" Type="Event" ThisKey="CreateEventId" OtherKey="Id" IsForeignKey="true" />
+      <Association Name="fk_Vote_has_Caption_Vote1" Member="CaptionVotes" Storage="_captionVotes" Type="CaptionVote" ThisKey="Id" OtherKey="VoteId" DeleteRule="NO ACTION" />
+      <Association Name="fk_Vote_User1" Member="User" Storage="_user" Type="User" ThisKey="UserId" OtherKey="Id" IsForeignKey="true" />
+      <Column Name="AdminNote" Member="AdminNote" Storage="_adminNote" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserId" Member="UserId" Storage="_userID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+      <Column Name="Weight" Member="Weight" Storage="_weight" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
+    </Type>
+  </Table>
+</Database>

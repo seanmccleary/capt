@@ -1,0 +1,29 @@
+﻿<?xml version="1.0"?>
+<!-- Edit this file and rename it CaptFlickrImageFetcher.exe.config -->
+<configuration>
+  <configSections>
+    <section name="flickr" type="Linq.Flickr.Configuration.FlickrSettings, Linq.Flickr"/>
+  </configSections>
+  <appSettings>
+    <add key="tags" value="man, woman, child, toddler, baby, dude, lady, kid, kids, children, men, women, goth, goths, punk, punks, teen, teenager, teens, teenagers, cowboy, loser, politician"/>
+  </appSettings>
+  <connectionStrings configSource="db.config" />
+  <flickr
+    apiKey="YOUR FLICKRR API KEY"
+    secretKey="YOUR FLICKR SECRET"
+    defaultAuthProvider="desktop"
+  >
+    <authProviders>
+      <add name="desktop" type="Linq.Flickr.Authentication.Providers.DesktopProvider"/>
+      <add name="web" type="Linq.Flickr.Authentication.Providers.WebProvider"/>
+    </authProviders>
+  </flickr>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <probing privatePath="bin;Bin"/>
+    </assemblyBinding>
+  </runtime>
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0"/>
+  </startup>
+</configuration>

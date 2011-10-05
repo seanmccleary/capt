@@ -17,20 +17,11 @@
  * along with capt.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using System.Web.Security;
 using Capt.Models;
-using DotNetOpenAuth.Messaging;
-using DotNetOpenAuth.OpenId;
-using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
-using DotNetOpenAuth.OpenId.RelyingParty;
-using Facebook;
 using Twitterizer;
-using System.Text.RegularExpressions;
 
 namespace Capt.Controllers
 {
@@ -40,52 +31,25 @@ namespace Capt.Controllers
 	public class AccountController : ApplicationController
 	{
 		/// <summary>
-		/// User repository
+		/// Our service layer!
 		/// </summary>
-		private IUserRepository _userRepo;
+		private IExternalLoginService _captService;
 
 		/// <summary>
-		/// OAuthToken repository
-		/// </summary>
-		private IOAuthTokenRepository _oauthTokenRepo;
-
-		/// <summary>
-		/// This is the URL that users will be redirected to after Facebook is done with 'em.
-		/// This is a property because there's two steps in the process where we have to send this
-		/// to Facebook.
-		/// </summary>
-		private string FacebookRedirectUrl
-		{
-			get
-			{
-				return
-					Request.Url.Scheme + "://"
-					+ Request.Url.Host
-					+ (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port)
-					+ Url.Action("ReceiveFBResponse");
-			}
-		}
-
-		/// <summary>
-		/// The zero-argument constructor will instantiate the repository classes that'll be used.
+		/// The zero-argument constructor will use a default service layer
 		/// </summary>
 		public AccountController()
-			: this(
-				new Capt.Models.LinqToMySql.UserRepository(),
-				new Capt.Models.LinqToMySql.OAuthTokenRepository()
-				)
+			: this(new Capt.Models.LinqToMySql.ExternalLoginService())
 		{
 		}
 
 		/// <summary>
-		/// Constructor that lets you specify your own repository classes.
+		/// Constructor that lets you specify your own service layer
 		/// </summary>
-		/// <param name="userRepo">The user repository you'd like to use</param>
-		/// <param name="oauthTokenRepo">The OAuthToken repository you'd like to use</param>
-		public AccountController(IUserRepository userRepo, IOAuthTokenRepository oauthTokenRepo)
+		/// <param name="_captService">The service layer object you'd like to use</param>
+		public AccountController(IExternalLoginService _captService)
 		{
-			this._userRepo = userRepo;
-			this._oauthTokenRepo = oauthTokenRepo;
+			this._captService = _captService;
 		}
 
 		/// <summary>
@@ -126,42 +90,14 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		private ActionResult SendOpenIDRequest(string returnUrl)
 		{
-
-			OpenIdRelyingParty openid = new OpenIdRelyingParty();
-
-			// Stage 2: user submitting Identifier  
-			Identifier id;
-			if (Identifier.TryParse(Request.Form["openid_identifier"], out id))
+			if (!String.IsNullOrWhiteSpace(Request.Form["openid_identifier"]))
 			{
 				try
 				{
-					// This is the URL that the Open ID server should send the user back to
-					// NOT the one that WE will eventually redirect the user back to.
-					Uri sendBackUri = new Uri(
-						Request.Url.Scheme + "://"
-						+ Request.Url.Host
-						+ (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port)
-						+ Url.Action("ReceiveOpenIDResponse", new { returnUrl = returnUrl }));
-
-					string realmUrl = Request.Url.Scheme + "://"
-						+ Request.Url.Host
-						+ (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
-
-					Regex regex = new Regex("(https?)://.*\\.?(captrato.com)");
-					realmUrl = regex.Replace(realmUrl, "$1://*.$2");
-
-					Realm realm = new Realm(realmUrl);
-					var request = openid.CreateRequest(Request.Form["openid_identifier"], realm, sendBackUri);
-
-					//Ask user for their email address  
-					/* Nahh...
-					ClaimsRequest fields = new ClaimsRequest();
-					fields.Email = DemandLevel.Request;
-					request.AddExtension(fields);
-					*/
-					return request.RedirectingResponse.AsActionResult();
+					return Redirect(_captService.GetOpenIdRedirectUrl(Request.Form["openid_identifier"], Request.Url,
+						Url.Action("ReceiveOpenIDResponse", new { returnUrl = returnUrl })));
 				}
-				catch (ProtocolException ex)
+				catch (Exception ex)
 				{
 					ModelState.AddModelError("Message", ex.Message);
 					return View("LogOn");
@@ -178,42 +114,24 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		public ActionResult ReceiveOpenIDResponse(string returnUrl)
 		{
-
-			OpenIdRelyingParty openid = new OpenIdRelyingParty();
-
-			IAuthenticationResponse response;
-
-			if ((response = openid.GetResponse()) == null)
+			try
 			{
-				// TODO: Handle this better.
-				return RedirectToAction("LogOn");
-			}
+				LogUserIn(_captService.GetOpenIdIdentifier(System.Web.HttpContext.Current.Request), 
+					ExternalLoginProvider.GenericOpenID);
 
-			switch (response.Status)
-			{
-
-				case AuthenticationStatus.Authenticated:
-					LogUserIn(response.ClaimedIdentifier, ExternalLoginProvider.GenericOpenID);
-
-					if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-					{
-						return Redirect(returnUrl);
-					}
-
+				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+				{
+					return Redirect(returnUrl);
+				}
+				else
+				{
 					return RedirectToAction("Index", "PictureCaptions");
-
-				case AuthenticationStatus.Canceled:
-					ModelState.AddModelError("Message", "Canceled at provider");
-					return View("LogOn");
-
-				case AuthenticationStatus.Failed:
-					ModelState.AddModelError("Message", response.Exception);
-					return View("LogOn");
-
-				default:
-					ModelState.AddModelError("Message", "There was a problem logging in.");
-					return View("LogOn");
-					
+				}
+			}
+			catch (Exception e)
+			{
+				ModelState.AddModelError("Message", e.Message);
+				return View("LogOn");
 			}
 		}
 
@@ -224,16 +142,14 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		private ActionResult SendFBRequest(string returnUrl = "/")
 		{
-			FacebookOAuthClient FBClient = new FacebookOAuthClient(FacebookApplication.Current);
-
-			FBClient.RedirectUri = new Uri(FacebookRedirectUrl);
-			var loginUri = FBClient.GetLoginUrl(new Dictionary<string, object> { { "state", returnUrl } });
-
-			return Redirect(loginUri.AbsoluteUri);
+			return Redirect(_captService.GetFacebookRedirectUrl(
+				Url.Action("ReceiveFBResponse", "Account", null, Request.Url.Scheme),
+				returnUrl)
+			);
 		}
 
 		/// <summary>
-		/// Receive the user after Facebook's send him back
+		/// Receive the user after Facebook's sent him back
 		/// </summary>
 		/// <param name="code">The code given back to us from Facebook</param>
 		/// <param name="returnUrl">The URL we should return the user to when he's logged in</param>
@@ -241,44 +157,24 @@ namespace Capt.Controllers
 		public ActionResult ReceiveFBResponse(string code, [Bind(Prefix="state")] string returnUrl)
 		{
 
-			FacebookOAuthResult oauthResult;
-			if (!FacebookOAuthResult.TryParse(Request.Url, out oauthResult))
+			try
 			{
-				ModelState.AddModelError("Message", "There was a problem logging in through facebook!");
-				return RedirectToAction("LogOn");
-			}
+				LogUserIn(_captService.GetFacebookId(System.Web.HttpContext.Current.Request),
+					ExternalLoginProvider.Facebook);
 
-			if (!oauthResult.IsSuccess)
+				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+				{
+					return Redirect(returnUrl);
+				}
+				else
+				{
+					return RedirectToAction("Index", "PictureCaptions");
+				}
+			}
+			catch (Exception e)
 			{
-				ModelState.AddModelError("Message", oauthResult.ErrorDescription);
+				ModelState.AddModelError("Message", e.Message);
 				return View("LogOn");
-			}
-
-			var oAuthClient = new FacebookOAuthClient(FacebookApplication.Current);
-			oAuthClient.RedirectUri = new Uri(FacebookRedirectUrl);
-			dynamic tokenResult = oAuthClient.ExchangeCodeForAccessToken(code);
-			string accessToken = tokenResult.access_token;
-
-			DateTime expiresOn = DateTime.MaxValue;
-
-			if (tokenResult.ContainsKey("expires"))
-			{
-				DateTimeConvertor.FromUnixTime(tokenResult.expires);
-			}
-
-			FacebookClient fbClient = new FacebookClient(accessToken);
-			dynamic me = fbClient.Get("me?fields=id");
-
-			LogUserIn(me.id, ExternalLoginProvider.Facebook);
-
-			// prevent open redirection attack by checking if the url is local.
-			if (Url.IsLocalUrl(returnUrl))
-			{
-				return Redirect(returnUrl);
-			}
-			else
-			{
-				return RedirectToAction("Index", "Home");
 			}
 		}
 
@@ -292,15 +188,13 @@ namespace Capt.Controllers
 			string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
 			string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
 
-			returnUrl = Request.Url.Scheme + "://"
-			+ Request.Url.Host
-			+ (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port)
-			+ Url.Action("ReceiveTwitterResponse", new { returnUrl = returnUrl });
 
-			var requestToken = OAuthUtility.GetRequestToken(consumerKey, consumerSecret, returnUrl);
-
-			return Redirect("http://twitter.com/oauth/authenticate?oauth_token=" + requestToken.Token);
-
+			return Redirect(_captService.GetTwitterRedirectUrl(
+				Url.Action("ReceiveTwitterResponse", "Account", null, Request.Url.Scheme),
+				returnUrl,
+				consumerKey,
+				consumerSecret)
+			);
 		}
 
 		/// <summary>
@@ -312,52 +206,40 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		public ActionResult ReceiveTwitterResponse(string oauth_token, string oauth_verifier, string returnUrl)
 		{
-
-			if (!String.IsNullOrWhiteSpace(Request["denied"]))
-			{
-				ModelState.AddModelError("Message", "Couldn't log you in via Twitter. (Did you deny access?)");
-				return View("LogOn");
-			}
-
 			string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
 			string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
 
-			OAuthTokenResponse tokens = OAuthUtility.GetAccessToken(consumerKey, consumerSecret, oauth_token, oauth_verifier);
-
-			string userId = Convert.ToString(tokens.UserId);
-
-
-			var user = LogUserIn(userId, ExternalLoginProvider.Twitter);
-
-			// Might as well save their Twitter token now, case'n they wanna share something later
-			var valid_tokens = from t in user.OAuthTokens
-							   where t.ExternalLoginProviderId == ExternalLoginProvider.Twitter
-							   && t.Expires > DateTime.UtcNow
-							   select t;
-
-			if (valid_tokens.Count() == 0)
+			try
 			{
-				var twitter_token = new OAuthToken()
+				OAuthToken oauthToken = null;
+				User user = LogUserIn(
+					_captService.GetTwitterId(
+						System.Web.HttpContext.Current.Request,
+						consumerKey, consumerSecret, out oauthToken),
+					ExternalLoginProvider.Facebook);
+
+				if (
+					oauthToken != null
+					&& user.OAuthTokens.Where(t => t.ExternalLoginProviderId == ExternalLoginProvider.Twitter).Count() == 0
+					)
 				{
-					Expires = DateTime.MaxValue,
-					ExternalLoginProviderId = ExternalLoginProvider.Twitter,
-					Secret = tokens.TokenSecret,
-					Token = tokens.Token,
-					User = user,
-					Event = new Event(EventType.ExternalLoginCreated)
-				};
+					_captService.SaveOAuthToken(user, oauthToken.Expires ?? DateTime.MaxValue, 
+						oauthToken.ExternalLoginProviderId,	oauthToken.Token, oauthToken.Secret);
+				}
 
-				_oauthTokenRepo.Save(twitter_token);
+				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+				{
+					return Redirect(returnUrl);
+				}
+				else
+				{
+					return RedirectToAction("Index", "PictureCaptions");
+				}
 			}
-
-			// prevent open redirection attack by checking if the url is local.
-			if (Url.IsLocalUrl(returnUrl))
+			catch (Exception e)
 			{
-				return Redirect(returnUrl);
-			}
-			else
-			{
-				return Redirect("/");
+				ModelState.AddModelError("Message", e.Message);
+				return View("LogOn");
 			}
 		}
 
@@ -370,37 +252,7 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		private User LogUserIn(string externalId, int externalLoginTypeId)
 		{
-
-			User user = _userRepo.GetByExternalLoginId(externalId);
-
-			if (user == null)
-			{
-				// well kiss my grits!  they're new here!
-				user = new User
-				{
-					Guid = Guid.NewGuid(),
-					IsAdmin = false,
-					IsLocked = false,
-					IsEmailAddressVerified = false,
-					Event = new Event(EventType.UserCreated)
-				};
-
-				var openIDAuth = new ExternalLogin()
-				{
-					Identifier = externalId,
-					User = user,
-					ExternalLoginProviderId = externalLoginTypeId,
-					Event = new Event(EventType.ExternalLoginCreated)
-				};
-
-				user.ExternalLogins.Add(openIDAuth);
-
-
-			}
-
-			// Update his last login datetime
-			user.LastLogin = DateTime.UtcNow;
-			_userRepo.Save(user);
+			User user = _captService.GetOrCreateUser(externalId, externalLoginTypeId);
 
 			Session["User"] = user;
 			FormsAuthentication.SetAuthCookie(user.Id.ToString(), false);

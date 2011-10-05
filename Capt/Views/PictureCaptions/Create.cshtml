@@ -88,6 +88,13 @@
                     <div class="editor-field" id="caption_anonymous_control_container">
                         @Html.EditorFor(model => model.IsAnonymous) @Html.LabelFor(model => model.IsAnonymous, "Anonymous?")
                         @Html.ValidationMessageFor(model => model.IsAnonymous)
+
+                        <input type="checkbox" name="facebook_share" /> Share your witticism on Faceboo?
+                        <input type="checkbox" name="facebook_share" /> How about Twitter?
+                    </div>
+                
+                    <div style="clear:both;" id="share_controlers">
+
                     </div>
 
                     <p id="caption_submit_control_container"> 

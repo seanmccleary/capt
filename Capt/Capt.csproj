@@ -143,10 +143,12 @@
     <Compile Include="Models\Event.cs" />
     <Compile Include="Models\EventType.cs" />
     <Compile Include="Models\ExternalLoginProvider.cs" />
+    <Compile Include="Models\IExternalLoginService.cs" />
     <Compile Include="Models\ICommentRepository.cs" />
     <Compile Include="Models\ILicenseRepository.cs" />
     <Compile Include="Models\IOAuthTokenRepository.cs" />
     <Compile Include="Models\License.cs" />
+    <Compile Include="Models\LinqToMySql\ExternalLoginService.cs" />
     <Compile Include="Models\LinqToMySql\CommentRepository.cs" />
     <Compile Include="Models\LinqToMySql\LicenseRepository.cs" />
     <Compile Include="Models\LinqToMySql\OAuthTokenRepository.cs" />

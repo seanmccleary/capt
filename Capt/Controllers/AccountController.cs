@@ -60,51 +60,48 @@ namespace Capt.Controllers
 		[ValidateInput(false)]
 		public ActionResult Authenticate(string returnUrl)
 		{
-
-			// Are we doing OpenID here?
-			if (Request.Form["provider_type"] == "openid")
+			try
 			{
-				return SendOpenIDRequest(returnUrl);
-			}
-
-			// How's about Facebook?
-			else if (Request.Form["provider_type"] == "fb")
-			{
-				return SendFBRequest(returnUrl);
-			}
-
-			// Twitter, perhaps?
-			else if (Request.Form["provider_type"] == "twitter")
-			{
-				return SendTwitterRequest(returnUrl);
-			}
-
-
-			return new EmptyResult();
-		}
-
-		/// <summary>
-		/// Send the user off to his chosen Open ID provider so's he can get authenticated
-		/// </summary>
-		/// <param name="returnUrl">The URL back to which the user should be redirected once he's logged in</param>
-		/// <returns></returns>
-		private ActionResult SendOpenIDRequest(string returnUrl)
-		{
-			if (!String.IsNullOrWhiteSpace(Request.Form["openid_identifier"]))
-			{
-				try
+				// Are we doing OpenID here?
+				if (Request.Form["provider_type"] == "openid")
 				{
 					return Redirect(_captService.GetOpenIdRedirectUrl(Request.Form["openid_identifier"], Request.Url,
 						Url.Action("ReceiveOpenIDResponse", new { returnUrl = returnUrl })));
 				}
-				catch (Exception ex)
+
+				// How's about Facebook?
+				else if (Request.Form["provider_type"] == "fb")
 				{
-					ModelState.AddModelError("Message", ex.Message);
-					return View("LogOn");
+					return Redirect(_captService.GetFacebookRedirectUrl(
+						Url.Action("ReceiveFBResponse", "Account", null, Request.Url.Scheme),
+						returnUrl)
+					);
 				}
+
+				// Twitter, perhaps?
+				else if (Request.Form["provider_type"] == "twitter")
+				{
+					string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
+					string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
+
+
+					return Redirect(_captService.GetTwitterRedirectUrl(
+						Url.Action("ReceiveTwitterResponse", "Account", null, Request.Url.Scheme),
+						returnUrl,
+						consumerKey,
+						consumerSecret)
+					);
+				}
+
+				// That's odd.  How'd we get here?
+				throw new ApplicationException("Couldn't figure out what kind of login we're doing here!");
+
 			}
-			ModelState.AddModelError("Message", "Invalid identifier");
-			return View("LogOn");
+			catch (Exception ex)
+			{
+				ModelState.AddModelError("Message", ex.Message);
+				return View("LogOn");
+			}
 		}
 
 		/// <summary>
@@ -136,19 +133,6 @@ namespace Capt.Controllers
 		}
 
 		/// <summary>
-		/// Send the user off to Facebook to log in there.
-		/// </summary>
-		/// <param name="returnUrl">The URL the user should eventually be sent back to</param>
-		/// <returns></returns>
-		private ActionResult SendFBRequest(string returnUrl = "/")
-		{
-			return Redirect(_captService.GetFacebookRedirectUrl(
-				Url.Action("ReceiveFBResponse", "Account", null, Request.Url.Scheme),
-				returnUrl)
-			);
-		}
-
-		/// <summary>
 		/// Receive the user after Facebook's sent him back
 		/// </summary>
 		/// <param name="code">The code given back to us from Facebook</param>
@@ -176,25 +160,6 @@ namespace Capt.Controllers
 				ModelState.AddModelError("Message", e.Message);
 				return View("LogOn");
 			}
-		}
-
-		/// <summary>
-		/// Send the user off to Twitter to get hisself authenticated.
-		/// </summary>
-		/// <param name="returnUrl">The URL we should eventually redirect the user back to</param>
-		/// <returns></returns>
-		public ActionResult SendTwitterRequest(string returnUrl = "/")
-		{
-			string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
-			string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
-
-
-			return Redirect(_captService.GetTwitterRedirectUrl(
-				Url.Action("ReceiveTwitterResponse", "Account", null, Request.Url.Scheme),
-				returnUrl,
-				consumerKey,
-				consumerSecret)
-			);
 		}
 
 		/// <summary>

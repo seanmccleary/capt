@@ -39,8 +39,7 @@ namespace Capt.Models
 		/// <param name="request">The Request object used for this web request</param>
 		/// <param name="returnUrl">The URL the user should be redirected back to</param>
 		/// <returns>The URL he needs to visit to log in</returns>
-		string GetOpenIdRedirectUrl(string identifier, System.Uri request, 
-			string returnUrl);
+		string GetOpenIdRedirectUrl(string identifier, string receiveUrl, string returnUrl);
 
 		/// <summary>
 		/// Get the user's OpenID identifier from the response back from the external authenticating
@@ -63,8 +62,9 @@ namespace Capt.Models
 		/// user back to us.
 		/// </summary>
 		/// <param name="request">The HTTP request from Facebook. Just pass it in OK?</param>
+		/// <param name="receiveUrl">The URL To which Facebook sent the user back.</param>
 		/// <returns>The user's Facebook ID.</returns>
-		string GetFacebookId(System.Web.HttpRequest request);
+		string GetFacebookId(System.Web.HttpRequest request, string receiveUrl);
 
 		/// <summary>
 		/// Send the user off to the Twitter so's they can log him in, log him right in, yessir.

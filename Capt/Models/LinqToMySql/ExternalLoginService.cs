@@ -106,7 +106,7 @@ namespace Capt.Models.LinqToMySql
 		}
 
 		/// <see cref="Capt.Models.IExternalLoginService.GetOpenIdRedirectUrl" />
-		public string GetOpenIdRedirectUrl(string identifier, System.Uri request, string returnUrl)
+		public string GetOpenIdRedirectUrl(string identifier, string receiveUrl, string returnUrl)
 		{
 
 			OpenIdRelyingParty openid = new OpenIdRelyingParty();
@@ -116,14 +116,14 @@ namespace Capt.Models.LinqToMySql
 			// This is the URL that the Open ID server should send the user back to
 			// NOT the one that WE will eventually redirect the user back to.
 			Uri sendBackUri = new Uri(
-				request.Scheme + "://"
-				+ request.Host
-				+ (request.IsDefaultPort ? "" : ":" + request.Port)
-				+ returnUrl);
+				receiveUrl 
+				+ "?returnUrl=" + returnUrl
+				+ "&externalLoginProviderId=" + ExternalLoginProvider.GenericOpenID);
 
-			string realmUrl = request.Scheme + "://"
-				+ request.Host
-				+ (request.IsDefaultPort ? "" : ":" + request.Port);
+			string realmUrl = 
+				sendBackUri.Scheme + "://"
+				+ sendBackUri.Host
+				+ (sendBackUri.IsDefaultPort ? "" : ":" + sendBackUri.Port);
 
 			// TODO: Don't hard-code this to captrato.com
 			Regex regex = new Regex("(https?)://.*\\.?(captrato.com)");
@@ -176,15 +176,19 @@ namespace Capt.Models.LinqToMySql
 		{
 			FacebookOAuthClient FBClient = new FacebookOAuthClient(FacebookApplication.Current);
 
+			string state =
+				"returnUrl=" + returnUrl
+				+ "&externalLoginProviderId=" + ExternalLoginProvider.Facebook;
+
 			FBClient.RedirectUri = new Uri(receiveUrl);
-			var loginUri = FBClient.GetLoginUrl(new Dictionary<string, object> { { "state", returnUrl } });
+			var loginUri = FBClient.GetLoginUrl(new Dictionary<string, object> { { "state", state } });
 
 			return loginUri.AbsoluteUri;
 
 		}
 
 		/// <see cref="Capt.Models.IExternalLoginService.GetFacebookId"/>
-		public string GetFacebookId(System.Web.HttpRequest request)
+		public string GetFacebookId(System.Web.HttpRequest request, string receiveUrl)
 		{
 			FacebookOAuthResult oauthResult;
 			if (!FacebookOAuthResult.TryParse(request.Url, out oauthResult))
@@ -199,12 +203,7 @@ namespace Capt.Models.LinqToMySql
 
 			var oAuthClient = new FacebookOAuthClient(FacebookApplication.Current);
 			
-			oAuthClient.RedirectUri = new Uri(
-					request.Url.Scheme + "://"
-					+ request.Url.Host
-					+ (request.Url.IsDefaultPort ? "" : ":" + request.Url.Port)
-					+ request.Url.AbsolutePath
-			);
+			oAuthClient.RedirectUri = new Uri(receiveUrl);
 			dynamic tokenResult = oAuthClient.ExchangeCodeForAccessToken(request["code"]);
 			string accessToken = tokenResult.access_token;
 
@@ -222,11 +221,14 @@ namespace Capt.Models.LinqToMySql
 		}
 
 		/// <see cref="Capt.Models.IExternalLoginService.GetTwitterRedirectUrl"/>
-		public string GetTwitterRedirectUrl(string receiveUrl, string returnUrl, 
+		public string GetTwitterRedirectUrl(string receiveUrl, string returnUrl,
 			string consumerKey, string consumerSecret)
 		{
+			receiveUrl +=
+				"?returnUrl=" + returnUrl
+				+ "&externalLoginProviderId=" + ExternalLoginProvider.Twitter;
 
-			var requestToken = OAuthUtility.GetRequestToken(consumerKey, consumerSecret, receiveUrl + "?returnUrl=" + returnUrl);
+			var requestToken = OAuthUtility.GetRequestToken(consumerKey, consumerSecret, receiveUrl);
 
 			return "http://twitter.com/oauth/authenticate?oauth_token=" + requestToken.Token;
 		}

@@ -62,20 +62,21 @@ namespace Capt.Controllers
 		{
 			try
 			{
+				string receiveUrl = Url.Action("ReceiveResponse", "Account", null, Request.Url.Scheme);
+
+
 				// Are we doing OpenID here?
 				if (Request.Form["provider_type"] == "openid")
 				{
-					return Redirect(_captService.GetOpenIdRedirectUrl(Request.Form["openid_identifier"], Request.Url,
-						Url.Action("ReceiveOpenIDResponse", new { returnUrl = returnUrl })));
+					return Redirect(_captService.GetOpenIdRedirectUrl(Request.Form["openid_identifier"], receiveUrl, returnUrl));
 				}
 
 				// How's about Facebook?
 				else if (Request.Form["provider_type"] == "fb")
 				{
 					return Redirect(_captService.GetFacebookRedirectUrl(
-						Url.Action("ReceiveFBResponse", "Account", null, Request.Url.Scheme),
-						returnUrl)
-					);
+						Url.Action("ReceiveFacebookResponse", "Account", null, Request.Url.Scheme)
+						, returnUrl));
 				}
 
 				// Twitter, perhaps?
@@ -84,12 +85,8 @@ namespace Capt.Controllers
 					string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
 					string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
 
-
-					return Redirect(_captService.GetTwitterRedirectUrl(
-						Url.Action("ReceiveTwitterResponse", "Account", null, Request.Url.Scheme),
-						returnUrl,
-						consumerKey,
-						consumerSecret)
+					return Redirect(
+						_captService.GetTwitterRedirectUrl(receiveUrl, returnUrl, consumerKey, consumerSecret)
 					);
 				}
 
@@ -105,93 +102,85 @@ namespace Capt.Controllers
 		}
 
 		/// <summary>
-		/// Handle a user returning from his Open ID provider.
+		/// OK, Facebook doesn't wanna PLAY BALL like the rest of the providers,
+		/// so we need to parse the "state" from them specialy.
 		/// </summary>
-		/// <param name="returnUrl">The URL we need to return the user to when all is said and done</param>
+		/// <param name="state">The "state" that we sent to Facebook</param>
 		/// <returns></returns>
-		public ActionResult ReceiveOpenIDResponse(string returnUrl)
+		public ActionResult ReceiveFacebookResponse(string state, string code)
 		{
-			try
-			{
-				LogUserIn(_captService.GetOpenIdIdentifier(System.Web.HttpContext.Current.Request), 
-					ExternalLoginProvider.GenericOpenID);
+			System.Collections.Specialized.NameValueCollection nvc =
+				System.Web.HttpUtility.ParseQueryString(state);
 
-				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-				{
-					return Redirect(returnUrl);
-				}
-				else
-				{
-					return RedirectToAction("Index", "PictureCaptions");
-				}
-			}
-			catch (Exception e)
-			{
-				ModelState.AddModelError("Message", e.Message);
-				return View("LogOn");
-			}
+			return ReceiveResponse(nvc["returnUrl"], Convert.ToInt32(nvc["externalLoginProviderId"]));
+
 		}
 
 		/// <summary>
-		/// Receive the user after Facebook's sent him back
+		/// Process the user's return from the external authenticator and redirec tthem appropriately
 		/// </summary>
-		/// <param name="code">The code given back to us from Facebook</param>
-		/// <param name="returnUrl">The URL we should return the user to when he's logged in</param>
+		/// <param name="returnUrl">The URL to which we should return the user at the end</param>
+		/// <param name="externalLoginProviderId">The ID of the external provider (Facebook, Twitter, etc.)</param>
 		/// <returns></returns>
-		public ActionResult ReceiveFBResponse(string code, [Bind(Prefix="state")] string returnUrl)
+		public ActionResult ReceiveResponse(string returnUrl, int externalLoginProviderId)
 		{
-
-			try
-			{
-				LogUserIn(_captService.GetFacebookId(System.Web.HttpContext.Current.Request),
-					ExternalLoginProvider.Facebook);
-
-				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-				{
-					return Redirect(returnUrl);
-				}
-				else
-				{
-					return RedirectToAction("Index", "PictureCaptions");
-				}
-			}
-			catch (Exception e)
-			{
-				ModelState.AddModelError("Message", e.Message);
-				return View("LogOn");
-			}
-		}
-
-		/// <summary>
-		/// Receive the user coming back from Twitter after having been authenticated
-		/// </summary>
-		/// <param name="oauth_token">OAuth token from Twitter</param>
-		/// <param name="oauth_verifier">OAuth verifier from Twitter</param>
-		/// <param name="returnUrl">The URL we should eventually redirect the user back to</param>
-		/// <returns></returns>
-		public ActionResult ReceiveTwitterResponse(string oauth_token, string oauth_verifier, string returnUrl)
-		{
-			string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
-			string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
-
 			try
 			{
 				OAuthToken oauthToken = null;
-				User user = LogUserIn(
-					_captService.GetTwitterId(
-						System.Web.HttpContext.Current.Request,
-						consumerKey, consumerSecret, out oauthToken),
-					ExternalLoginProvider.Facebook);
+				User user = null;
 
-				if (
-					oauthToken != null
-					&& user.OAuthTokens.Where(t => t.ExternalLoginProviderId == ExternalLoginProvider.Twitter).Count() == 0
-					)
+
+				switch(externalLoginProviderId)
 				{
-					_captService.SaveOAuthToken(user, oauthToken.Expires ?? DateTime.MaxValue, 
-						oauthToken.ExternalLoginProviderId,	oauthToken.Token, oauthToken.Secret);
+					case ExternalLoginProvider.GenericOpenID:
+					
+						user = LogUserIn(_captService.GetOpenIdIdentifier(System.Web.HttpContext.Current.Request),
+							externalLoginProviderId);
+						break;
+
+					case ExternalLoginProvider.Facebook:
+						
+						LogUserIn(
+							_captService.GetFacebookId(
+								System.Web.HttpContext.Current.Request,
+								Url.Action("ReceiveFacebookResponse", "Account", null, Request.Url.Scheme)),
+							ExternalLoginProvider.Facebook);
+
+						break;
+
+					case ExternalLoginProvider.Twitter:
+
+						string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
+						string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
+
+						user = LogUserIn(
+							_captService.GetTwitterId(
+								System.Web.HttpContext.Current.Request,
+								consumerKey, consumerSecret, out oauthToken),
+							externalLoginProviderId);
+
+						break;
+
+					default:
+
+						// Crud.  Couldn't figure out who's sending us back?
+						throw new ApplicationException("Couldn't figure out what kind of login we're doing here!");
 				}
 
+				// Did we pick up an OAuth token in the process of logging our pal in?
+				if (
+					user != null 
+					&& oauthToken != null
+					&& user.OAuthTokens.Where(
+						t => t.ExternalLoginProviderId == externalLoginProviderId
+					).Count() == 0
+					)
+				{
+					_captService.SaveOAuthToken(user, oauthToken.Expires ?? DateTime.MaxValue,
+						oauthToken.ExternalLoginProviderId, oauthToken.Token, oauthToken.Secret);
+				}
+
+				// So now then, where was it the user wanted to go?
 				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
 				{
 					return Redirect(returnUrl);
@@ -200,12 +189,15 @@ namespace Capt.Controllers
 				{
 					return RedirectToAction("Index", "PictureCaptions");
 				}
+
 			}
 			catch (Exception e)
 			{
 				ModelState.AddModelError("Message", e.Message);
 				return View("LogOn");
 			}
+
+
 		}
 
 		/// <summary>
@@ -224,7 +216,6 @@ namespace Capt.Controllers
 			return user;
 		}
 
-
 		/// <summary>
 		/// This unexciting action pretty much just displays the login page.
 		/// </summary>
@@ -239,7 +230,6 @@ namespace Capt.Controllers
 
 			return View();
 		}
-
 
 		/// <summary>
 		/// Log a user out and redirect him to the home page.

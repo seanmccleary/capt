@@ -48,17 +48,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AArnott-dotnetopenid-9dbb9aa\DotNetOpenAuth.dll</HintPath>
     </Reference>
-    <Reference Include="Facebook, Version=5.2.1.0, Culture=neutral, PublicKeyToken=58cb4f2111d1e6de, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Facebook.5.2.1.0\lib\net40-client\Facebook.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MVCBasics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\MVCBasics\MVCBasics\bin\MVCBasics.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data, Version=6.4.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MySql.Data.6.4.4\lib\net40\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.3.5.8\lib\35\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Linq" />
@@ -113,17 +110,14 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="Twitterizer2, Version=2.3.3.21964, Culture=neutral, PublicKeyToken=69d1469eac671567, processorArchitecture=MSIL">
-      <HintPath>..\packages\twitterizer.2.3.3\lib\35\Twitterizer2.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\ApplicationController.cs" />
     <Compile Include="Controllers\CaptionController.cs" />
     <Compile Include="Controllers\CaptionForPictureController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\GlobalViewDataAttribute.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\PictureCaptionsController.cs" />
     <Compile Include="Controllers\PictureController.cs" />
@@ -142,13 +136,10 @@
     <Compile Include="Models\CaptionForPictureViewModel.cs" />
     <Compile Include="Models\Event.cs" />
     <Compile Include="Models\EventType.cs" />
-    <Compile Include="Models\ExternalLoginProvider.cs" />
-    <Compile Include="Models\IExternalLoginService.cs" />
     <Compile Include="Models\ICommentRepository.cs" />
     <Compile Include="Models\ILicenseRepository.cs" />
     <Compile Include="Models\IOAuthTokenRepository.cs" />
     <Compile Include="Models\License.cs" />
-    <Compile Include="Models\LinqToMySql\ExternalLoginService.cs" />
     <Compile Include="Models\LinqToMySql\CommentRepository.cs" />
     <Compile Include="Models\LinqToMySql\LicenseRepository.cs" />
     <Compile Include="Models\LinqToMySql\OAuthTokenRepository.cs" />
@@ -176,9 +167,6 @@
     <Content Include="Content\images\arrow-up-large.png" />
     <Content Include="Content\images\arrow-up-small.png" />
     <Content Include="Content\images\flickr_icon.png" />
-    <Content Include="Content\images\openid-inputicon.gif" />
-    <Content Include="Content\images\openid-providers-en.png" />
-    <Content Include="Content\openid.css" />
     <Content Include="Global.asax" />
     <Content Include="README.jQuery.vsdoc.txt" />
     <Content Include="Scripts\CaptionInput.js" />
@@ -192,8 +180,6 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\openid-en.js" />
-    <Content Include="Scripts\openid-jquery.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

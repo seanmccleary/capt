@@ -30,7 +30,8 @@ namespace Capt.Controllers
 	/// <summary>
 	/// The controller for the CaptionForPictureViewModel.
 	/// </summary>
-    public class CaptionForPictureController : ApplicationController
+	[GlobalViewData]
+	public class CaptionForPictureController : Controller
     {
 		private IUserRepository _userRepo;
 

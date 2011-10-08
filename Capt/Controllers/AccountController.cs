@@ -21,25 +21,34 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
 using Capt.Models;
-using Twitterizer;
 
 namespace Capt.Controllers
 {
 	/// <summary>
 	/// Controller for login-related actions
 	/// </summary>
-	public class AccountController : ApplicationController
+	[GlobalViewData]
+	public class AccountController : MVCBasics.Areas.ExternalAuthentication.Controllers.AccountController
 	{
+
 		/// <summary>
-		/// Our service layer!
+		/// User repository
 		/// </summary>
-		private IExternalLoginService _captService;
+		private IUserRepository _userRepo;
+
+		/// <summary>
+		/// OAuthToken repository
+		/// </summary>
+		private IOAuthTokenRepository _oauthTokenRepo;
 
 		/// <summary>
 		/// The zero-argument constructor will use a default service layer
 		/// </summary>
 		public AccountController()
-			: this(new Capt.Models.LinqToMySql.ExternalLoginService())
+			: this(
+				new Capt.Models.LinqToMySql.UserRepository(),
+				new Capt.Models.LinqToMySql.OAuthTokenRepository()
+			)
 		{
 		}
 
@@ -47,188 +56,39 @@ namespace Capt.Controllers
 		/// Constructor that lets you specify your own service layer
 		/// </summary>
 		/// <param name="_captService">The service layer object you'd like to use</param>
-		public AccountController(IExternalLoginService _captService)
+		public AccountController(IUserRepository userRepo, IOAuthTokenRepository oauthTokenRepo) : base()
 		{
-			this._captService = _captService;
-		}
-
-		/// <summary>
-		/// The login form submits to this action.
-		/// </summary>
-		/// <param name="returnUrl">The URL the user should be sent back to once he's logged in</param>
-		/// <returns></returns>
-		[ValidateInput(false)]
-		public ActionResult Authenticate(string returnUrl)
-		{
-			try
-			{
-				string receiveUrl = Url.Action("ReceiveResponse", "Account", null, Request.Url.Scheme);
-
-
-				// Are we doing OpenID here?
-				if (Request.Form["provider_type"] == "openid")
-				{
-					return Redirect(_captService.GetOpenIdRedirectUrl(Request.Form["openid_identifier"], receiveUrl, returnUrl));
-				}
-
-				// How's about Facebook?
-				else if (Request.Form["provider_type"] == "fb")
-				{
-					return Redirect(_captService.GetFacebookRedirectUrl(
-						Url.Action("ReceiveFacebookResponse", "Account", null, Request.Url.Scheme)
-						, returnUrl));
-				}
-
-				// Twitter, perhaps?
-				else if (Request.Form["provider_type"] == "twitter")
-				{
-					string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
-					string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
-
-					return Redirect(
-						_captService.GetTwitterRedirectUrl(receiveUrl, returnUrl, consumerKey, consumerSecret)
-					);
-				}
-
-				// That's odd.  How'd we get here?
-				throw new ApplicationException("Couldn't figure out what kind of login we're doing here!");
-
-			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError("Message", ex.Message);
-				return View("LogOn");
-			}
-		}
-
-		/// <summary>
-		/// OK, Facebook doesn't wanna PLAY BALL like the rest of the providers,
-		/// so we need to parse the "state" from them specialy.
-		/// </summary>
-		/// <param name="state">The "state" that we sent to Facebook</param>
-		/// <returns></returns>
-		public ActionResult ReceiveFacebookResponse(string state, string code)
-		{
-			System.Collections.Specialized.NameValueCollection nvc =
-				System.Web.HttpUtility.ParseQueryString(state);
-
-			return ReceiveResponse(nvc["returnUrl"], Convert.ToInt32(nvc["externalLoginProviderId"]));
-
-		}
-
-		/// <summary>
-		/// Process the user's return from the external authenticator and redirec tthem appropriately
-		/// </summary>
-		/// <param name="returnUrl">The URL to which we should return the user at the end</param>
-		/// <param name="externalLoginProviderId">The ID of the external provider (Facebook, Twitter, etc.)</param>
-		/// <returns></returns>
-		public ActionResult ReceiveResponse(string returnUrl, int externalLoginProviderId)
-		{
-			try
-			{
-				OAuthToken oauthToken = null;
-				User user = null;
-
-
-				switch(externalLoginProviderId)
-				{
-					case ExternalLoginProvider.GenericOpenID:
-					
-						user = LogUserIn(_captService.GetOpenIdIdentifier(System.Web.HttpContext.Current.Request),
-							externalLoginProviderId);
-						break;
-
-					case ExternalLoginProvider.Facebook:
-						
-						LogUserIn(
-							_captService.GetFacebookId(
-								System.Web.HttpContext.Current.Request,
-								Url.Action("ReceiveFacebookResponse", "Account", null, Request.Url.Scheme)),
-							ExternalLoginProvider.Facebook);
-
-						break;
-
-					case ExternalLoginProvider.Twitter:
-
-						string consumerKey = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerKey"];
-						string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["TwitterConsumerSecret"];
-
-						user = LogUserIn(
-							_captService.GetTwitterId(
-								System.Web.HttpContext.Current.Request,
-								consumerKey, consumerSecret, out oauthToken),
-							externalLoginProviderId);
-
-						break;
-
-					default:
-
-						// Crud.  Couldn't figure out who's sending us back?
-						throw new ApplicationException("Couldn't figure out what kind of login we're doing here!");
-				}
-
-				// Did we pick up an OAuth token in the process of logging our pal in?
-				if (
-					user != null 
-					&& oauthToken != null
-					&& user.OAuthTokens.Where(
-						t => t.ExternalLoginProviderId == externalLoginProviderId
-					).Count() == 0
-					)
-				{
-					_captService.SaveOAuthToken(user, oauthToken.Expires ?? DateTime.MaxValue,
-						oauthToken.ExternalLoginProviderId, oauthToken.Token, oauthToken.Secret);
-				}
-
-				// So now then, where was it the user wanted to go?
-				if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-				{
-					return Redirect(returnUrl);
-				}
-				else
-				{
-					return RedirectToAction("Index", "PictureCaptions");
-				}
-
-			}
-			catch (Exception e)
-			{
-				ModelState.AddModelError("Message", e.Message);
-				return View("LogOn");
-			}
-
-
+			_userRepo = userRepo;
+			_oauthTokenRepo = oauthTokenRepo;
 		}
 
 		/// <summary>
 		/// Get a user by his External ID. If he's new, create and save him.  Put him in the session.
-		/// TODO: Move this to the service layer, as soon as I create it.
 		/// </summary>
 		/// <param name="externalId">The ID used by the external provider</param>
-		/// <param name="externalLoginTypeId">The type of external login (OpenID, Facebook, Twitter, etc.)</param>
+		/// <param name="provider">The type of external login (OpenID, Facebook, Twitter, etc.)</param>
 		/// <returns></returns>
-		private User LogUserIn(string externalId, int externalLoginTypeId)
+		override protected void LogUserIn(string externalId, 
+			MVCBasics.Areas.ExternalAuthentication.Models.ExternalLoginProvider provider, 
+			MVCBasics.Areas.ExternalAuthentication.Models.OAuthToken oauthToken)
 		{
-			User user = _captService.GetOrCreateUser(externalId, externalLoginTypeId);
+			User user = GetOrCreateUser(externalId, (int) provider);
+
+			// Did we get an OAuth token?  If so, let's save that baby.
+			if (
+				oauthToken != null
+				&& !oauthToken.IsSession
+				&& user.OAuthTokens.Where(
+					t => t.ExternalLoginProviderId == (int) provider
+				).Count() == 0
+				)
+			{
+				SaveOAuthToken(user, oauthToken.Expires ?? DateTime.MaxValue,
+					(int) provider, oauthToken.Token, oauthToken.Secret);
+			}
 
 			Session["User"] = user;
 			FormsAuthentication.SetAuthCookie(user.Id.ToString(), false);
-			return user;
-		}
-
-		/// <summary>
-		/// This unexciting action pretty much just displays the login page.
-		/// </summary>
-		/// <returns></returns>
-		public ActionResult LogOn()
-		{
-			if (Request.IsAuthenticated)
-			{
-				// User's already logged in?
-				return Redirect("/");
-			}
-
-			return View();
 		}
 
 		/// <summary>
@@ -255,5 +115,68 @@ namespace Capt.Controllers
 
 			return Redirect(returnUrl);
 		}
+
+
+
+
+		/**********************************
+		 * MOVE THESE INTO A SERVICE LAYER
+		 *********************************/
+		private User GetOrCreateUser(string externalId, int externalLoginTypeId)
+		{
+
+			User user = _userRepo.GetByExternalLoginId(externalId);
+
+			if (user == null)
+			{
+				// well kiss my grits!  they're new here!
+				user = new User
+				{
+					Guid = Guid.NewGuid(),
+					IsAdmin = false,
+					IsLocked = false,
+					IsEmailAddressVerified = false,
+					Event = new Event(EventType.UserCreated)
+				};
+
+				var openIDAuth = new ExternalLogin()
+				{
+					Identifier = externalId,
+					User = user,
+					ExternalLoginProviderId = externalLoginTypeId,
+					Event = new Event(EventType.ExternalLoginCreated)
+				};
+
+				user.ExternalLogins.Add(openIDAuth);
+
+
+			}
+
+			// Update his last login datetime
+			user.LastLogin = DateTime.UtcNow;
+			_userRepo.Save(user);
+
+			return user;
+		}
+
+		public void SaveOAuthToken(User user, DateTime expiration, int externalLoginProviderId, string token, string secret)
+		{
+			var new_token = new Capt.Models.OAuthToken()
+			{
+				Expires = expiration,
+				ExternalLoginProviderId = externalLoginProviderId,
+				Secret = secret,
+				Token = token,
+				User = user,
+				Event = new Event(EventType.ExternalLoginCreated)
+			};
+
+			_oauthTokenRepo.Save(new_token);
+
+		}
+
+
+
+
 	}
 }

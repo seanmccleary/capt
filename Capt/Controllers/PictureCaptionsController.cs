@@ -30,7 +30,8 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Actions related to the PictureCaption view model.
 	/// </summary>
-    public class PictureCaptionsController : ApplicationController
+	[GlobalViewData]
+	public class PictureCaptionsController : Controller
     {
 
 		private IPictureRepository _pictureRepo;

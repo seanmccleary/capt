@@ -30,7 +30,8 @@ namespace Capt.Controllers
 	/// Nothing user-facing here.
 	/// </summary>
 	[Authorize(Roles = "Administrator")]
-	public class PictureController : ApplicationController
+	[GlobalViewData]
+	public class PictureController : Controller
 	{
 
 		private IPictureRepository _pictureRepo;

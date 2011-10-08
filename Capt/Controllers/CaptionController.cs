@@ -31,7 +31,8 @@ namespace Capt.Controllers
 	/// anything user-facing.
 	/// </summary>
 	[Authorize(Roles = "Administrator")]
-    public class CaptionController : ApplicationController
+	[GlobalViewData]
+	public class CaptionController : Controller
     {
 
 		private ICaptionRepository _captionRepo;

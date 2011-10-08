@@ -28,7 +28,8 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Controller actions for saving votes on pictures and captions via AJAX.
 	/// </summary>
-    public class VoteController : ApplicationController
+	[GlobalViewData]
+	public class VoteController : Controller
     {
 
 		private IVoteRepository _voteRepo;

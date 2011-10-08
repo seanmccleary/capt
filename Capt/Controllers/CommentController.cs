@@ -30,7 +30,8 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Controller actions for getting and saving comments
 	/// </summary>
-    public class CommentController : ApplicationController
+	[GlobalViewData]
+	public class CommentController : Controller
     {
 
 		private ICommentRepository _commentRepo;

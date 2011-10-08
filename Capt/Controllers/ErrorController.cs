@@ -32,7 +32,8 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Controller actions for various errors that could occur
 	/// </summary>
-    public class ErrorController : ApplicationController
+	[GlobalViewData]
+	public class ErrorController : Controller
     {
 		/// <summary>
 		/// Action for the "default" error.  This is the one that shows the "Oops we goofed up" page and send

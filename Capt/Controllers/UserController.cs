@@ -30,7 +30,8 @@ namespace Capt.Controllers
 	/// Basic scaffolded controller for use with ugly scaffolded views for some admin tasks.  Nothing user-facing here.
 	/// </summary>
 	[Authorize(Roles = "Administrator")]
-	public class UserController : ApplicationController
+	[GlobalViewData]
+	public class UserController : Controller
 	{
 		private IUserRepository _userRepo;
 

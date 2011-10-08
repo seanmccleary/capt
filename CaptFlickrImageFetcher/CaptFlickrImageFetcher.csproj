@@ -42,11 +42,11 @@
     </Reference>
     <Reference Include="Linq.Flickr, Version=1.4.2.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\LINQFlickr_c256bc92e423\Linq.Flickr.dll</HintPath>
+      <HintPath>..\dependencies\LINQFlickr_c256bc92e423\Linq.Flickr.dll</HintPath>
     </Reference>
     <Reference Include="LinqExtender, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\LINQFlickr_c256bc92e423\LinqExtender.dll</HintPath>
+      <HintPath>..\dependencies\LINQFlickr_c256bc92e423\LinqExtender.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

@@ -27,9 +27,13 @@
 		<add key="SmtpSsl" value="True" />
 		-->
 
+		<add key="FacebookAppId" value="YOUR FACEBOOK APP ID" />
+		<add key="FacebookAppSecret" value="YOUR FACEBOOK APP SECRET" />
+
 		<add key="TwitterConsumerKey" value="YOUR TWITTER KEY" />
 		<add key="TwitterConsumerSecret" value="YOUR TWITTER SECRET" />
 
+		<!-- <add key="OpenIdRealm" value="http://*.captrato.com"/> -->
 		<!-- <add key="ForceDomainName" value="www-qa.captrato.com" /> -->
 
 		<!-- If you're going to use Google, Yahoo or Bing webmaster tools: 
@@ -144,5 +148,4 @@
 		</messaging>
 		<!-- Allow DotNetOpenAuth to publish usage statistics to library authors to improve the library. -->
 	</dotNetOpenAuth>
-	<facebookSettings appId="YOUR FACEBOOK APP ID" appSecret="YOUR FACEBOOK APP SECRET" />
 </configuration>

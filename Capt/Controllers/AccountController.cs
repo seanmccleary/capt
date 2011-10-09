@@ -21,6 +21,7 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
 using Capt.Models;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -32,22 +33,16 @@ namespace Capt.Controllers
 	{
 
 		/// <summary>
-		/// User repository
+		/// The Account service layer we'll be using to save users and oauth tokens.
 		/// </summary>
-		private IUserRepository _userRepo;
-
-		/// <summary>
-		/// OAuthToken repository
-		/// </summary>
-		private IOAuthTokenRepository _oauthTokenRepo;
+		IAccountService _accountService;
 
 		/// <summary>
 		/// The zero-argument constructor will use a default service layer
 		/// </summary>
 		public AccountController()
 			: this(
-				new Capt.Models.LinqToMySql.UserRepository(),
-				new Capt.Models.LinqToMySql.OAuthTokenRepository()
+				new Capt.Services.AccountService()
 			)
 		{
 		}
@@ -56,10 +51,9 @@ namespace Capt.Controllers
 		/// Constructor that lets you specify your own service layer
 		/// </summary>
 		/// <param name="_captService">The service layer object you'd like to use</param>
-		public AccountController(IUserRepository userRepo, IOAuthTokenRepository oauthTokenRepo) : base()
+		public AccountController(IAccountService accountService) : base()
 		{
-			_userRepo = userRepo;
-			_oauthTokenRepo = oauthTokenRepo;
+			_accountService = accountService;
 		}
 
 		/// <summary>
@@ -72,7 +66,7 @@ namespace Capt.Controllers
 			MVCBasics.Areas.ExternalAuthentication.Models.ExternalLoginProvider provider, 
 			MVCBasics.Areas.ExternalAuthentication.Models.OAuthToken oauthToken)
 		{
-			User user = GetOrCreateUser(externalId, (int) provider);
+			User user = _accountService.GetOrCreateUser(externalId, (int) provider);
 
 			// Did we get an OAuth token?  If so, let's save that baby.
 			if (
@@ -83,7 +77,7 @@ namespace Capt.Controllers
 				).Count() == 0
 				)
 			{
-				SaveOAuthToken(user, oauthToken.Expires ?? DateTime.MaxValue,
+				_accountService.SaveOAuthToken(user, oauthToken.Expires ?? DateTime.MaxValue,
 					(int) provider, oauthToken.Token, oauthToken.Secret);
 			}
 
@@ -115,68 +109,6 @@ namespace Capt.Controllers
 
 			return Redirect(returnUrl);
 		}
-
-
-
-
-		/**********************************
-		 * MOVE THESE INTO A SERVICE LAYER
-		 *********************************/
-		private User GetOrCreateUser(string externalId, int externalLoginTypeId)
-		{
-
-			User user = _userRepo.GetByExternalLoginId(externalId);
-
-			if (user == null)
-			{
-				// well kiss my grits!  they're new here!
-				user = new User
-				{
-					Guid = Guid.NewGuid(),
-					IsAdmin = false,
-					IsLocked = false,
-					IsEmailAddressVerified = false,
-					Event = new Event(EventType.UserCreated)
-				};
-
-				var openIDAuth = new ExternalLogin()
-				{
-					Identifier = externalId,
-					User = user,
-					ExternalLoginProviderId = externalLoginTypeId,
-					Event = new Event(EventType.ExternalLoginCreated)
-				};
-
-				user.ExternalLogins.Add(openIDAuth);
-
-
-			}
-
-			// Update his last login datetime
-			user.LastLogin = DateTime.UtcNow;
-			_userRepo.Save(user);
-
-			return user;
-		}
-
-		public void SaveOAuthToken(User user, DateTime expiration, int externalLoginProviderId, string token, string secret)
-		{
-			var new_token = new Capt.Models.OAuthToken()
-			{
-				Expires = expiration,
-				ExternalLoginProviderId = externalLoginProviderId,
-				Secret = secret,
-				Token = token,
-				User = user,
-				Event = new Event(EventType.ExternalLoginCreated)
-			};
-
-			_oauthTokenRepo.Save(new_token);
-
-		}
-
-
-
 
 	}
 }

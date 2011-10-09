@@ -24,6 +24,7 @@ using System.Web;
 using System.Web.Mvc;
 using Capt.Helpers;
 using Capt.Models;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -38,7 +39,10 @@ namespace Capt.Controllers
 
 		private ICaptionRepository _captionRepo;
 
-		private IUserRepository _userRepo;
+		/// <summary>
+		/// The account service to use with this controller.
+		/// </summary>
+		private IAccountService _accountService;
 
 		/// <summary>
 		/// These are the options that should be shown in the drop-down list to let users
@@ -58,11 +62,11 @@ namespace Capt.Controllers
 		/// <param name="pictureRepo"></param>
 		/// <param name="captionRepo"></param>
 		/// <param name="userRepo"></param>
-		public PictureCaptionsController(IPictureRepository pictureRepo, ICaptionRepository captionRepo, IUserRepository userRepo)
+		public PictureCaptionsController(IPictureRepository pictureRepo, ICaptionRepository captionRepo, IAccountService accountService)
 		{
 			_pictureRepo = pictureRepo;
 			_captionRepo = captionRepo;
-			_userRepo = userRepo;
+			_accountService = accountService;
 
 			// Set the default sort options
 			string sortPref = System.Web.HttpContext.Current.Session["captionSortOrder"] as string;
@@ -87,7 +91,7 @@ namespace Capt.Controllers
 			: this(
 				new Capt.Models.LinqToMySql.PictureRepository(),
 				new Capt.Models.LinqToMySql.CaptionRepository(),
-				new Capt.Models.LinqToMySql.UserRepository()
+				new AccountService()
 			)
 		{
 		}
@@ -179,7 +183,7 @@ namespace Capt.Controllers
 					&& !String.IsNullOrWhiteSpace(pcvm.UserName))
 				{
 					caption.User.Name = pcvm.UserName;
-					_userRepo.Save(caption.User);
+					_accountService.SaveUser(caption.User);
 				}
 
 				_captionRepo.Save(caption);
@@ -335,10 +339,7 @@ namespace Capt.Controllers
 
 			ViewBag.NextPictureActivates = (nextPicture != null ? nextPicture.Activates.ToString() + " UTC-0000" : "");
 
-			ViewBag.RankedUsers = (from u in _userRepo.GetAll()
-								   where !u.IsLocked
-								   && !String.IsNullOrWhiteSpace(u.Name)
-								   select u).OrderByDescending(u => u.Score).Take(100);
+			ViewBag.RankedUsers = _accountService.GetRankedUsers(100);
 
 			return View(from p in pictures select new PictureCaptionsViewModel(p, ViewBag.IsAdminStuffShown));
 		}

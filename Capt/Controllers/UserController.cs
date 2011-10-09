@@ -22,6 +22,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Capt.Models;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -33,21 +34,24 @@ namespace Capt.Controllers
 	[GlobalViewData]
 	public class UserController : Controller
 	{
-		private IUserRepository _userRepo;
+		/// <summary>
+		/// Our account service for this controller.
+		/// </summary>
+		private IAccountService _accountService;
 
 		/// <summary>
-		/// Create an instance of this controller with the specified user repository.
+		/// Create an instance of this controller with the specified service layer.
 		/// </summary>
-		/// <param name="userRepo"></param>
-		public UserController(IUserRepository userRepo)
+		/// <param name="accountService">The account service layer to use</param>
+		public UserController(IAccountService accountService)
 		{
-			_userRepo = userRepo;
+			_accountService = accountService;
 		}
 
 		/// <summary>
 		/// Create an intsance of this controlelr with the user repository of your choice.
 		/// </summary>
-		public UserController() : this(new Capt.Models.LinqToMySql.UserRepository())
+		public UserController() : this(new AccountService())
 		{
 		}
 
@@ -56,7 +60,7 @@ namespace Capt.Controllers
 		
 		public ActionResult Index()
 		{
-			return View(_userRepo.GetAll());
+			return View(_accountService.GetAllUsers());
 		}
 
 		//
@@ -64,7 +68,7 @@ namespace Capt.Controllers
 		
 		public ActionResult Details(int id)
 		{
-			return View(_userRepo.GetById(id));
+			return View(_accountService.GetUserById(id));
 		}
 
 
@@ -73,7 +77,7 @@ namespace Capt.Controllers
 		
 		public ActionResult Edit(int id)
 		{
-			return View(_userRepo.GetById(id));
+			return View(_accountService.GetUserById(id));
 		}
 
 		//
@@ -88,8 +92,7 @@ namespace Capt.Controllers
 				{
 					return View();
 				}
-
-				_userRepo.Save(user);
+				_accountService.SaveUser(user);
 
 				return RedirectToAction("Index");
 			}
@@ -104,7 +107,7 @@ namespace Capt.Controllers
 		
 		public ActionResult Delete(int id)
 		{
-			return View(_userRepo.GetById(id));
+			return View(_accountService.GetUserById(id));
 		}
 
 		//
@@ -115,8 +118,7 @@ namespace Capt.Controllers
 		{
 			try
 			{
-				user = _userRepo.GetById(user.Id);
-				_userRepo.Delete(user);
+				_accountService.DeleteUser(id);
 				return RedirectToAction("Index");
 			}
 			catch

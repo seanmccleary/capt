@@ -24,6 +24,7 @@ using System.Web;
 using System.Web.Mvc;
 using Capt.Helpers;
 using Capt.Models;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -33,18 +34,21 @@ namespace Capt.Controllers
 	[GlobalViewData]
 	public class CaptionForPictureController : Controller
     {
-		private IUserRepository _userRepo;
+		/// <summary>
+		/// Our account service we'll be a-usin'.
+		/// </summary>
+		private IAccountService _accountService;
 
 		private ICaptionRepository _captionRepo;
 
 		/// <summary>
-		/// Constructor which allows you to specify your own repositories.
+		/// Constructor which allows you to specify your own services.
 		/// </summary>
-		/// <param name="userRepo"></param>
+		/// <param name="accountService">The account service to use for this controller</param>
 		/// <param name="captionRepo"></param>
-		public CaptionForPictureController(IUserRepository userRepo, ICaptionRepository captionRepo)
+		public CaptionForPictureController(IAccountService accountService, ICaptionRepository captionRepo)
 		{
-			_userRepo = userRepo;
+			_accountService = accountService;
 			_captionRepo = captionRepo;
 		}
 
@@ -52,7 +56,7 @@ namespace Capt.Controllers
 		/// Zero-argument constructor will choose the most appropriate repositories for this environment.
 		/// </summary>
 		public CaptionForPictureController()
-			: this(new Capt.Models.LinqToMySql.UserRepository(), new Capt.Models.LinqToMySql.CaptionRepository())
+			: this(new AccountService(), new Capt.Models.LinqToMySql.CaptionRepository())
 		{
 		}
 
@@ -179,13 +183,7 @@ namespace Capt.Controllers
 			ViewBag.AreMoreCaptionsLinksShown = true;
 			ViewBag.AreCaptionAuthorLinksShown = true;
 
-			var users = _userRepo.GetAll();
-			ViewBag.RankedUsers = (from u in users
-								   where !u.IsLocked
-								   && !String.IsNullOrWhiteSpace(u.Name)
-								   select u).OrderByDescending(u => u.Score).Take(100);
-
-
+			ViewBag.RankedUsers = _accountService.GetRankedUsers(100);
 			return View(cfpvms.OrderByDescending(c => c.Created));
 		}
 
@@ -203,11 +201,11 @@ namespace Capt.Controllers
 			int userId = -1;
 			if (int.TryParse(userName, out userId))
 			{
-				userToView = _userRepo.GetById(userId);
+				userToView = _accountService.GetUserById(userId);
 			}
 			else
 			{
-				userToView = _userRepo.GetByName(userName);
+				userToView = _accountService.GetUserByName(userName);
 			}
 
 			if (userToView == null || (!ViewBag.IsAdminStuffShown && userToView.IsLocked))

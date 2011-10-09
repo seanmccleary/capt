@@ -142,7 +142,7 @@ namespace CaptFlickrImageFetcher
                 IsVisible = true,
                 Url = newPhoto.Url,
                 LicenseId = licenseId ?? 0,
-                Activates = DateTime.UtcNow.AddMinutes(rand.Next(690, 750)),
+                Activates = DateTime.UtcNow.AddMinutes(rand.Next(1410, 1470)),
                 Event = new Event(EventType.PictureCreated)
             };
 

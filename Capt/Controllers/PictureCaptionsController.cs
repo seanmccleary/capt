@@ -95,7 +95,6 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		public ActionResult Create(int pictureId)
 		{
-			throw new Exception("adfasd");
 			Picture pic = _pictureService.GetPictureById(pictureId, ViewBag.IsAdminStuffShown);
 
 			if (pic == null)

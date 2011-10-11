@@ -85,40 +85,7 @@ namespace Capt
 
 		protected void Application_Error()
 		{
-
-			var exception = Server.GetLastError();
-
-			if (exception is System.Threading.ThreadAbortException)
-			{
-				// Sigh... ignore these.
-				return;
-			}
-
-			var httpException = exception as HttpException;
-			Response.Clear();
-			Server.ClearError();
-			var routeData = new RouteData();
-			routeData.Values["controller"] = "Error";
-			routeData.Values["action"] = "Default";
-			routeData.Values["exception"] = exception;
-
-			Response.StatusCode = 500;
-			
-			if (httpException != null)
-			{
-				Response.StatusCode = httpException.GetHttpCode();
-				switch (Response.StatusCode)
-				{
-					case 404:
-						routeData.Values["action"] = "Error404";
-						break;
-				}
-			}
-		
-			IController errorsController = new Capt.Controllers.ErrorController();
-			var rc = new RequestContext(new HttpContextWrapper(Context), routeData);
-			errorsController.Execute(rc);
-			
+			new MVCBasics.Areas.Errors.ErrorHandler().Handle();
 		}
 		
 		protected void Session_Start()

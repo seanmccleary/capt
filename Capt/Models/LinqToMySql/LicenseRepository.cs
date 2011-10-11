@@ -28,7 +28,7 @@ namespace Capt.Models.LinqToMySql
 	/// </summary>
 	public class LicenseRepository : Repository, ILicenseRepository
 	{
-		public IEnumerable<License> GetAll()
+		public IQueryable<License> GetAll()
 		{
 			return db.Licenses;
 		}

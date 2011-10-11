@@ -34,7 +34,7 @@ namespace Capt.Models
 		/// </summary>
 		/// <param name="captionId">The ID of the comment you're after</param>
 		/// <returns></returns>
-		IEnumerable<Comment> GetByCaptionId(int captionId);
+		IQueryable<Comment> GetByCaptionId(int captionId);
 
 		/// <summary>
 		/// Save (update or insert) a comment into the data store.

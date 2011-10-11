@@ -37,7 +37,7 @@ namespace Capt.Models.LinqToMySql
 
 		}
 
-		public IEnumerable<Caption> GetAll()
+		public IQueryable<Caption> GetAll()
 		{
 			return db.Captions;
 		}

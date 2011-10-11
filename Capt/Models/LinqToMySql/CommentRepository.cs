@@ -28,7 +28,7 @@ namespace Capt.Models.LinqToMySql
 	/// </summary>
 	public class CommentRepository : Repository, ICommentRepository
 	{
-		public IEnumerable<Comment> GetByCaptionId(int captionId)
+		public IQueryable<Comment> GetByCaptionId(int captionId)
 		{
 			return from c in db.Comments
 				   join cc in db.CaptionComments on c.Id equals cc.CommentId

@@ -33,21 +33,21 @@ namespace Capt.Models
 		/// </summary>
 		/// <param name="captionId">ID of the caption whose votes you want</param>
 		/// <returns></returns>
-		IEnumerable<Vote> GetByCaptionId(int captionId);
+		IQueryable<Vote> GetByCaptionId(int captionId);
 
 		/// <summary>
 		/// Get all Vote objects for a given Picture
 		/// </summary>
 		/// <param name="pictureId">ID of the Picture whose votes you want</param>
 		/// <returns></returns>
-		IEnumerable<Vote> GetByPictureId(int pictureId);
+		IQueryable<Vote> GetByPictureId(int pictureId);
 
 		/// <summary>
 		/// Get all Vote objects created by a given User
 		/// </summary>
 		/// <param name="userId">ID of the user whose votes you want</param>
 		/// <returns></returns>
-		IEnumerable<Vote> GetByUserId(int userId);
+		IQueryable<Vote> GetByUserId(int userId);
 
 		/// <summary>
 		/// Save (insert or update) a Vote to the data store

@@ -72,10 +72,14 @@ namespace Capt.Services
 		/// <see cref="Capt.Services.IAccountService.GetRankedUsers"/>
 		public List<User> GetRankedUsers()
 		{
+
+			// TODO: This is just... Jesus.  I'm sorting by something whih
+			// isn't actually in the database.  That's the problem. It requires
+			// selecting ALL users first.  This oughts be fixed up.
 			return (from u in _userRepo.GetAll()
 						where !u.IsLocked
-						&& !String.IsNullOrWhiteSpace(u.Name)
-						select u).OrderByDescending(u => u.Score).ToList();
+						&& u.Name != null
+						select u).ToList().OrderByDescending(u => u.Score).ToList();
 
 		}
 

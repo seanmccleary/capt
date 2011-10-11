@@ -32,6 +32,6 @@ namespace Capt.Models
 		/// Get all the License objects.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<License> GetAll();
+		IQueryable<License> GetAll();
 	}
 }

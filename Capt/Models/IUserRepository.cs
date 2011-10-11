@@ -32,7 +32,7 @@ namespace Capt.Models
 		/// Get all the users from the database.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<User> GetAll();
+		IQueryable<User> GetAll();
 
 		/// <summary>
 		/// Get a user by his nickname.

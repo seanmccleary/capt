@@ -30,7 +30,7 @@ namespace Capt.Models.LinqToMySql
 	public class UserRepository : Repository, IUserRepository
 	{
 
-		public IEnumerable<User> GetAll()
+		public IQueryable<User> GetAll()
 		{
 			return db.Users;
 		}

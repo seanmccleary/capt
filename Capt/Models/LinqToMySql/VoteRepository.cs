@@ -29,7 +29,7 @@ namespace Capt.Models.LinqToMySql
 	public class VoteRepository : Repository, IVoteRepository
 	{
 
-		public IEnumerable<Vote> GetByCaptionId(int captionId)
+		public IQueryable<Vote> GetByCaptionId(int captionId)
 		{
 			return from v in db.Votes
 				   join cv in db.CaptionVotes on v.Id equals cv.VoteId
@@ -37,7 +37,7 @@ namespace Capt.Models.LinqToMySql
 				   select v;
 		}
 
-		public IEnumerable<Vote> GetByPictureId(int pictureId)
+		public IQueryable<Vote> GetByPictureId(int pictureId)
 		{
 			return from v in db.Votes
 					join pv in db.PictureVotes on v.Id equals pv.VoteId
@@ -45,7 +45,7 @@ namespace Capt.Models.LinqToMySql
 					select v;
 		}
 
-		public IEnumerable<Vote> GetByUserId(int userId)
+		public IQueryable<Vote> GetByUserId(int userId)
 		{
 			return from v in db.Votes
 					where v.UserId == userId

@@ -51,6 +51,6 @@ namespace Capt.Models
 		/// Get all captions from the data store.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<Caption> GetAll();
+		IQueryable<Caption> GetAll();
 	}
 }

@@ -27,7 +27,6 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Controller for the mostly-static general information pages.
 	/// </summary>
-	[GlobalViewData]
 	public class InfoController : Controller
     {
         

@@ -71,7 +71,6 @@
                         }
 
 
-
                         @if (ViewBag.IsAdminStuffShown)
                         {
                             <li>@Html.ActionLink("add picture", "Create", "Picture", null, new { @class = "admin_option" })</li>
@@ -79,9 +78,9 @@
                         }
 
 					    @if (User.IsInRole("Administrator"))
-         {
+                        {
 						    <li>@Html.ActionLink("toggle privileges", "TogglePrivilegeMode", "Account", new { ReturnUrl = Request.Url }, new { @class = "admin_option" })</li>
-         }
+                        }
 
                     </ul>
                 </nav>

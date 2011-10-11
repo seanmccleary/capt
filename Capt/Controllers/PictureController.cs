@@ -31,7 +31,6 @@ namespace Capt.Controllers
 	/// Nothing user-facing here.
 	/// </summary>
 	[Authorize(Roles = "Administrator")]
-	[GlobalViewData]
 	public class PictureController : Controller
 	{
 

@@ -32,7 +32,6 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Controller actions for various errors that could occur
 	/// </summary>
-	[GlobalViewData]
 	public class ErrorController : Controller
     {
 		/// <summary>

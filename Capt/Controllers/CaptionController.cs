@@ -32,7 +32,6 @@ namespace Capt.Controllers
 	/// anything user-facing.
 	/// </summary>
 	[Authorize(Roles = "Administrator")]
-	[GlobalViewData]
 	public class CaptionController : Controller
     {
 

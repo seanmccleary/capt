@@ -31,7 +31,6 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Controller actions for getting and saving comments
 	/// </summary>
-	[GlobalViewData]
 	public class CommentController : Controller
     {
 

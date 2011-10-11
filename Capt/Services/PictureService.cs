@@ -164,7 +164,7 @@ namespace Capt.Services
 			{
 				return pic;
 			}
-			else if (pic.Activates < DateTime.UtcNow && pic.IsVisible && (pic.User == null || !pic.User.IsLocked))
+			else if (pic != null && pic.Activates < DateTime.UtcNow && pic.IsVisible && (pic.User == null || !pic.User.IsLocked))
 			{
 				return pic;
 			}

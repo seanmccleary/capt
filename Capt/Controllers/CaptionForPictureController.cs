@@ -31,7 +31,6 @@ namespace Capt.Controllers
 	/// <summary>
 	/// The controller for the CaptionForPictureViewModel.
 	/// </summary>
-	[GlobalViewData]
 	public class CaptionForPictureController : Controller
     {
 		/// <summary>

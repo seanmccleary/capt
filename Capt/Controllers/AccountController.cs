@@ -28,7 +28,6 @@ namespace Capt.Controllers
 	/// <summary>
 	/// Controller for login-related actions
 	/// </summary>
-	[GlobalViewData]
 	public class AccountController : MVCBasics.Areas.ExternalAuthentication.Controllers.AccountController
 	{
 

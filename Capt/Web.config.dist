@@ -15,17 +15,16 @@
 		<!--<add key="GoogleAnalyticsId" value="UA-25779109-1" />-->
 
 		<!-- Uncomment below to get errors emailed to you
-		<add key="SmtpServer" value="localhost" />
-		<add key="SmtpPort" value="25" />
-		<add key="ErrorEmailsTo" value="your emaila ddress" />
-		<add key="EmailsFrom" value="info@yoursite.com" />
-		-->
+<add key="SmtpServer" value="localhost" />
+<add key="SmtpPort" value="25" />
+<add key="ErrorEmailsTo" value="your emaila ddress" />
+<add key="EmailsFrom" value="info@yoursite.com" />
 
-		<!-- And these ones are optional
-		<add key="SmtpLogin" value="" /> 
-		<add key="SmtpPassword" value="" />
-		<add key="SmtpSsl" value="True" />
-		-->
+<!-- And these ones are optional
+<add key="SmtpLogin" value="" /> 
+<add key="SmtpPassword" value="" />
+<add key="SmtpSsl" value="True" />
+-->
 
 		<add key="FacebookAppId" value="YOUR FACEBOOK APP ID" />
 		<add key="FacebookAppSecret" value="YOUR FACEBOOK APP SECRET" />

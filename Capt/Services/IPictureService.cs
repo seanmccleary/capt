@@ -35,7 +35,7 @@ namespace Capt.Services
 
 		void DeleteCaption(Caption caption);
 
-		List<Caption> GetAllCaptions(bool isAdmin);
+		List<Caption> GetAllCaptions(bool isAdmin, int? limit);
 
 		List<Comment> GetCommentsForCaption(int captionId, bool isAdmin);
 

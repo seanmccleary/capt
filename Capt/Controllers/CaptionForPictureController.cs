@@ -71,7 +71,7 @@ namespace Capt.Controllers
 		{
 			List<SyndicationItem> items = new List<SyndicationItem>();
 
-			var captions = _pictureService.GetAllCaptions(false).Take(10);
+			var captions = _pictureService.GetAllCaptions(false, 10);
 
 			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
 
@@ -150,7 +150,7 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		public ActionResult Index()
 		{
-			var captions = _pictureService.GetAllCaptions(ViewBag.IsAdminStuffShown);
+			var captions = _pictureService.GetAllCaptions(ViewBag.IsAdminStuffShown, null);
 			List<CaptionForPictureViewModel> cfpvms = new List<CaptionForPictureViewModel>();
 
 			foreach (var caption in captions)

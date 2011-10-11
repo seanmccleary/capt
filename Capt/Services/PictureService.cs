@@ -106,21 +106,37 @@ namespace Capt.Services
 			_captionRepo.Delete(caption);
 		}
 
+		/// <summary>
+		/// Filter out the captions that a non-admin shouldn't see
+		/// </summary>
+		/// <param name="captions"></param>
+		/// <returns></returns>
+		private IQueryable<Caption> FilterCaptionsForNonAdmin(IQueryable<Caption> captions)
+		{
+			DateTime now = DateTime.UtcNow;
+			return (from caption in captions
+							where caption.IsVisible && caption.Picture.IsVisible && caption.Picture.Activates < now
+							&& !caption.Picture.IsPrivate 
+							&& (caption.Picture.UserId == null || !caption.Picture.User.IsLocked)
+							select caption);
+		}
+
 		/// <see cref="Capt.Services.IPictureService.GetAllCaptions"/>
-		public List<Caption> GetAllCaptions(bool isAdmin)
+		public List<Caption> GetAllCaptions(bool isAdmin, int? limit)
 		{
 			var captions = _captionRepo.GetAll();
+			if (limit != null)
+			{
+				captions = captions.Take((int) limit);
+			}
+			
 
 			if (!isAdmin)
 			{
-				captions = (from caption in captions
-							where caption.IsVisible && caption.Picture.IsVisible && caption.Picture.Activates > DateTime.UtcNow
-							&& !caption.Picture.IsPrivate && !caption.IsAnonymous
-							&& (caption.Picture.User != null && !caption.Picture.User.IsLocked)
-							select caption);
+				captions = FilterCaptionsForNonAdmin(captions);
 			}
 
-			return captions.ToList();
+			return captions.OrderByDescending(c => c.CreateEventId).ToList();
 		}
 
 		/// <see cref="Capt.Services.IPictureService.GetCommentsForCaption"/>

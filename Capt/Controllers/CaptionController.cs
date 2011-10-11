@@ -22,6 +22,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Capt.Models;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -35,15 +36,15 @@ namespace Capt.Controllers
 	public class CaptionController : Controller
     {
 
-		private ICaptionRepository _captionRepo;
+		private IPictureService _pictureService;
 
-		public CaptionController(ICaptionRepository captionrepo)
+		public CaptionController(IPictureService pictureService)
 		{
-			_captionRepo = captionrepo;
+			_pictureService = pictureService; ;
 		}
 
 		public CaptionController()
-			: this(new Capt.Models.LinqToMySql.CaptionRepository())
+			: this(new PictureService())
 		{
 		}
 
@@ -60,7 +61,7 @@ namespace Capt.Controllers
 
         public ActionResult Details(int id)
         {
-            return View(_captionRepo.GetById(id));
+            return View(_pictureService.GetCaptionById(id, ViewBag.IsAdminStuffShown));
         }
 
         
@@ -69,7 +70,7 @@ namespace Capt.Controllers
  
         public ActionResult Edit(int id)
         {
-			return View(_captionRepo.GetById(id));
+			return View(_pictureService.GetCaptionById(id, ViewBag.IsAdminStuffShown));
         }
 
         //
@@ -84,8 +85,8 @@ namespace Capt.Controllers
 				{
 					return View();
 				}
-				
-				_captionRepo.Save(caption);
+
+				_pictureService.SaveCaption(caption);
 
 				return View();
             }
@@ -100,7 +101,7 @@ namespace Capt.Controllers
  
         public ActionResult Delete(int id)
         {
-            return View(_captionRepo.GetById(id));
+			return View(_pictureService.GetCaptionById(id, ViewBag.IsAdminStuffShown));
         }
 
         //
@@ -111,11 +112,9 @@ namespace Capt.Controllers
         {
             try
             {
-				caption = _captionRepo.GetById(id);
-				int pictureId = caption.PictureId;
-				_captionRepo.Delete(caption);
- 
-                return RedirectToAction("Create", "PictureCaptions", new { pictureId = pictureId });
+				caption = _pictureService.GetCaptionById(id, ViewBag.IsAdminStuffShown);
+				_pictureService.DeleteCaption(caption);
+                return RedirectToAction("Create", "PictureCaptions", new { pictureId = caption.PictureId });
             }
             catch
             {

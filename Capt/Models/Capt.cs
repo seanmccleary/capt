@@ -1,21 +1,3 @@
-/*
- * Copyright 2011 Sean McCleary
- * 
- * This file is part of capt.
- *
- * capt is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * capt is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License
- * along with capt.  If not, see <http://www.gnu.org/licenses/>.
- */
 // 
 //  ____  _     __  __      _        _ 
 // |  _ \| |__ |  \/  | ___| |_ __ _| |
@@ -23,7 +5,7 @@
 // | |_| | |_) | |  | |  __/ || (_| | |
 // |____/|_.__/|_|  |_|\___|\__\__,_|_|
 //
-// Auto-generated from Capt on 2011-09-29 15:45:14Z.
+// Auto-generated from Capt on 2011-10-09 18:23:25Z.
 // Please visit http://code.google.com/p/dblinq2007/ for more information.
 //
 namespace Capt.Models
@@ -1026,7 +1008,7 @@ namespace Capt.Models
 		
 		private int _id;
 		
-		private System.Nullable<bool> _isVisible;
+		private bool _isVisible;
 		
 		private System.Nullable<int> _parentCommentID;
 		
@@ -1063,7 +1045,7 @@ namespace Capt.Models
 		
 		partial void OnIsVisibleChanged();
 		
-		partial void OnIsVisibleChanging(System.Nullable<bool> value);
+		partial void OnIsVisibleChanging(bool value);
 		
 		partial void OnParentCommentIdChanged();
 		
@@ -1155,9 +1137,9 @@ namespace Capt.Models
 			}
 		}
 		
-		[Column(Storage="_isVisible", Name="IsVisible", DbType="tinyint(1)", AutoSync=AutoSync.Never)]
+		[Column(Storage="_isVisible", Name="IsVisible", DbType="tinyint(1)", AutoSync=AutoSync.Never, CanBeNull=false)]
 		[DebuggerNonUserCode()]
-		public System.Nullable<bool> IsVisible
+		public bool IsVisible
 		{
 			get
 			{

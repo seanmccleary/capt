@@ -52,15 +52,14 @@ namespace Capt.Services
 		/// <summary>
 		/// Get a list of the users, ranked by score
 		/// </summary>
-		/// <param name="number">The number of users the list should contain</param>
 		/// <returns>A list of users, ranked by score</returns>
-		IEnumerable<User> GetRankedUsers(int number);
+		List<User> GetRankedUsers();
 
 		/// <summary>
 		/// Get all the users.  (Just wait 'til you get a load of the return value description.)
 		/// </summary>
 		/// <returns>All the users</returns>
-		IEnumerable<User> GetAllUsers();
+		List<User> GetAllUsers();
 
 		/// <summary>
 		/// Delete a user

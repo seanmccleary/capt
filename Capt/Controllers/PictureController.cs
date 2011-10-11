@@ -22,6 +22,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Capt.Models;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -34,22 +35,20 @@ namespace Capt.Controllers
 	public class PictureController : Controller
 	{
 
-		private IPictureRepository _pictureRepo;
+		private IPictureService _pictureService;
 
-		private ILicenseRepository _licenseRepo;
 
 		/// <summary>
-		/// Create an instance of this controller with the specified repositories.
+		/// Create an instance of this controller with the specified service
 		/// </summary>
 		/// <param name="pictureRepo"></param>
 		/// <param name="licenseRepo"></param>
-		public PictureController(IPictureRepository pictureRepo, ILicenseRepository licenseRepo)
+		public PictureController(IPictureService pictureService)
 		{
-			_pictureRepo = pictureRepo;
-			_licenseRepo = licenseRepo;
+			_pictureService = pictureService;
 
 			var LicenseOptions = new List<SelectListItem>();
-			var licenses = _licenseRepo.GetAll();
+			var licenses = _pictureService.GetAllLicenses();
 			foreach(var license in licenses)
 			{
 				LicenseOptions.Add(
@@ -69,7 +68,7 @@ namespace Capt.Controllers
 		/// Create an instance of this controller with the default repositories.
 		/// </summary>
 		public PictureController()
-			: this(new Capt.Models.LinqToMySql.PictureRepository(), new Capt.Models.LinqToMySql.LicenseRepository())
+			: this(new PictureService())
 		{
 		}
 
@@ -77,7 +76,7 @@ namespace Capt.Controllers
 		// GET: /Picture/Details/5
 		public ActionResult Details(int id)
 		{
-			Picture pic = _pictureRepo.GetById(id);
+			Picture pic = _pictureService.GetPictureById(id, ViewBag.IsAdminStuffShown);
 
 			ViewBag.Picture = pic;
 
@@ -120,7 +119,7 @@ namespace Capt.Controllers
 				newPicture.User = Session["User"] as User;
 				newPicture.Event = new Event(EventType.PictureCreated);
 
-				_pictureRepo.Save(newPicture);
+				_pictureService.SavePicture(newPicture);
 
 				return RedirectToAction("Index", "PictureCaptions");
 			}
@@ -134,7 +133,7 @@ namespace Capt.Controllers
 		// GET: /Picture/Edit/5
 		public ActionResult Edit(int id)
 		{
-			return View(_pictureRepo.GetById(id));
+			return View(_pictureService.GetPictureById(id, ViewBag.IsAdminStuffShown));
 		}
 
 		//
@@ -151,7 +150,7 @@ namespace Capt.Controllers
 					return View();
 				}
 
-				_pictureRepo.Save(editedPicture);
+				_pictureService.SavePicture(editedPicture);
 
 				return View();
 			}
@@ -165,7 +164,7 @@ namespace Capt.Controllers
 		// GET: /Picture/Delete/5
 		public ActionResult Delete(int id)
 		{
-			return View(_pictureRepo.GetById(id));
+			return View(_pictureService.GetPictureById(id, ViewBag.IsAdminStuffShown));
 		}
 
 		//
@@ -174,8 +173,7 @@ namespace Capt.Controllers
 		[HttpPost]
 		public ActionResult Delete(int id, Picture picture)
 		{
-			picture = _pictureRepo.GetById(picture.Id);
-			_pictureRepo.Delete(picture);
+			_pictureService.DeletePicture(id);
 			return RedirectToAction("Index", "PictureCaptions");
 		}
 

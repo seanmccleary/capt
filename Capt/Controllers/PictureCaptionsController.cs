@@ -35,13 +35,8 @@ namespace Capt.Controllers
 	public class PictureCaptionsController : Controller
     {
 
-		private IPictureRepository _pictureRepo;
+		private IPictureService _pictureService;
 
-		private ICaptionRepository _captionRepo;
-
-		/// <summary>
-		/// The account service to use with this controller.
-		/// </summary>
 		private IAccountService _accountService;
 
 		/// <summary>
@@ -62,11 +57,10 @@ namespace Capt.Controllers
 		/// <param name="pictureRepo"></param>
 		/// <param name="captionRepo"></param>
 		/// <param name="userRepo"></param>
-		public PictureCaptionsController(IPictureRepository pictureRepo, ICaptionRepository captionRepo, IAccountService accountService)
+		public PictureCaptionsController(IPictureService pictureService, IAccountService accountService)
 		{
-			_pictureRepo = pictureRepo;
-			_captionRepo = captionRepo;
 			_accountService = accountService;
+			_pictureService = pictureService;
 
 			// Set the default sort options
 			string sortPref = System.Web.HttpContext.Current.Session["captionSortOrder"] as string;
@@ -89,8 +83,7 @@ namespace Capt.Controllers
 		/// </summary>
 		public PictureCaptionsController()
 			: this(
-				new Capt.Models.LinqToMySql.PictureRepository(),
-				new Capt.Models.LinqToMySql.CaptionRepository(),
+				new PictureService(),
 				new AccountService()
 			)
 		{
@@ -103,17 +96,9 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		public ActionResult Create(int pictureId)
 		{
-			Picture pic = _pictureRepo.GetById(pictureId);
+			Picture pic = _pictureService.GetPictureById(pictureId, ViewBag.IsAdminStuffShown);
 
-			if (
-				pic == null
-				|| (
-					!ViewBag.IsAdminStuffShown 
-					&& (
-						pic.Activates > DateTime.UtcNow || !pic.IsVisible || (pic.User != null && pic.User.IsLocked)
-					)
-				)
-			)
+			if (pic == null)
 			{
 				throw new HttpException(404, "Picture #" + pictureId + " doesn't seem to exist.");
 			}
@@ -148,7 +133,7 @@ namespace Capt.Controllers
 		[ValidateInput(false)]
 		public ActionResult Create(int pictureId, PictureCaptionsViewModel pcvm)
 		{
-			Picture pic = _pictureRepo.GetById(pictureId);
+			Picture pic = _pictureService.GetPictureById(pictureId, ViewBag.IsAdminStuffShown);
 
 			pcvm.SetValuesFromPicture(pic, ViewBag.IsAdminStuffShown);
 
@@ -186,7 +171,7 @@ namespace Capt.Controllers
 					_accountService.SaveUser(caption.User);
 				}
 
-				_captionRepo.Save(caption);
+				_pictureService.SaveCaption(caption);
 
 				// Providing the route values here seems to be necessary for mono
 				// but not MS... interesting.
@@ -205,8 +190,8 @@ namespace Capt.Controllers
 		/// <param name="pic">The picture the user is looking at right now</param>
 		private void SetNextAndPreviousPictureIds(Picture pic)
 		{
-			Picture nextPic = _pictureRepo.GetNext(pic);
-			Picture previousPic = _pictureRepo.GetPrevious(pic);
+			Picture nextPic = _pictureService.GetNextPicture(pic);
+			Picture previousPic = _pictureService.GetPreviousPicture(pic);
 
 			if (previousPic != null && (ViewBag.IsAdminStuffShown || previousPic.Activates < DateTime.UtcNow))
 			{
@@ -238,12 +223,7 @@ namespace Capt.Controllers
 
 			List<SyndicationItem> items = new List<SyndicationItem>();
 
-			var pictures = (from p in _pictureRepo.GetAll()
-						   where p.Activates < DateTime.UtcNow
-						   && p.IsVisible && !p.IsPrivate
-						   && (p.User == null || !p.User.IsLocked)
-						   orderby p.Activates descending
-						   select p).Take(10);
+			var pictures = _pictureService.GetAllPictures(false).Take(10);
 
 			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
 
@@ -321,7 +301,7 @@ namespace Capt.Controllers
 		public ActionResult Index(int start = 0)
 		{
 
-			var pictures = _pictureRepo.GetRanked(start, 11, (bool) ViewData["IsAdminStuffShown"]);
+			var pictures = _pictureService.GetRankedPictures(11, start, (bool)ViewData["IsAdminStuffShown"]);
 
 			ViewBag.IsNextPageAvailable = pictures.Count() == 11;
 			ViewBag.IsPreviousPageAvailable = start != 0;
@@ -329,19 +309,16 @@ namespace Capt.Controllers
 			ViewBag.PreviousPageStartsAt = start - 10;
 			
 			// We only got that extra one to see if there was another page of results
-			pictures = pictures.Take(10);
+			pictures = pictures.Take(10).ToList();
 
 			// Get the next-to-activeate picture
-			var nextPicture = (from p in _pictureRepo.GetAll()
-							   where p.Activates > DateTime.UtcNow
-							   orderby p.Activates
-							   select p).FirstOrDefault();
+			var nextPicture = _pictureService.GetNextPictureToActivate();
 
 			ViewBag.NextPictureActivates = (nextPicture != null ? nextPicture.Activates.ToString() + " UTC-0000" : "");
 
-			ViewBag.RankedUsers = _accountService.GetRankedUsers(100);
+			ViewBag.RankedUsers = _accountService.GetRankedUsers().Take(100);
 
-			return View(from p in pictures select new PictureCaptionsViewModel(p, ViewBag.IsAdminStuffShown));
+			return View(from p in pictures select new PictureCaptionsViewModel(p, (bool)ViewData["IsAdminStuffShown"]));
 		}
 
 
@@ -367,23 +344,9 @@ namespace Capt.Controllers
 		public ActionResult CaptionDetails(int captionId)
 		{
 
-			Caption caption = _captionRepo.GetById(captionId);
+			Caption caption = _pictureService.GetCaptionById(captionId, ViewBag.IsAdminStuffShown);
 
-			if (
-				caption == null
-				|| caption.Picture == null
-				|| (
-					!ViewBag.IsAdminStuffShown
-					&& (
-						(
-							caption.Picture.Activates > DateTime.UtcNow || !caption.Picture.IsVisible || (caption.Picture.User != null && caption.Picture.User.IsLocked)
-						)
-						|| (
-							!caption.IsVisible || (caption.User.IsLocked)
-						)
-					)
-				)
-			)
+			if (caption == null)
 			{
 				throw new HttpException(404, "Caption #" + captionId + " doesn't seem to exist.");
 			}
@@ -398,7 +361,6 @@ namespace Capt.Controllers
 			// TODO: Change this so it doesnt display an IEnumerable with one element. That's lame.
 			pcvm.Captions = pcvm.Captions.Where(c => c.Id == captionId);
 			return View(pcvm);
-
 		}
 
     }

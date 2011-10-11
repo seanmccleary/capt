@@ -98,6 +98,7 @@ CREATE  TABLE IF NOT EXISTS `Picture` (
   INDEX `Url_INDEX` (`Url` ASC) ,
   INDEX `fk_Picture_License1` (`LicenseId` ASC) ,
   INDEX `fk_Picture_Event1` (`CreateEventId` ASC) ,
+  INDEX `Rank_INDEX` (`Rank` ASC) ,
   CONSTRAINT `fk_Picture_User1`
     FOREIGN KEY (`UserId` )
     REFERENCES `User` (`Id` )
@@ -303,7 +304,7 @@ ENGINE = InnoDB;
 CREATE  TABLE IF NOT EXISTS `Comment` (
   `Id` INT NOT NULL AUTO_INCREMENT ,
   `Text` VARCHAR(140) NOT NULL ,
-  `IsVisible` TINYINT(1)  NULL ,
+  `IsVisible` TINYINT(1)  NOT NULL ,
   `ParentCommentId` INT NULL ,
   `UserId` INT NOT NULL ,
   `AdminNote` VARCHAR(140) NULL ,
@@ -428,6 +429,8 @@ DELIMITER ;
 
 
 DELIMITER $$
+
+
 CREATE TRIGGER Picture_BEFORE_INSERT BEFORE INSERT ON Picture
 FOR EACH ROW BEGIN
     SET NEW.Rank = PICTURE_RANK(NEW.Id, NEW.Activates);
@@ -447,6 +450,8 @@ FOR EACH ROW BEGIN
 END;
 
 $$
+
+
 
 CREATE TRIGGER PictureVote_AFTER_INSERT AFTER INSERT ON PictureVote
 FOR EACH ROW BEGIN

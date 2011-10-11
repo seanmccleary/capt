@@ -39,24 +39,27 @@ namespace Capt.Controllers
 		/// </summary>
 		private IAccountService _accountService;
 
-		private ICaptionRepository _captionRepo;
+		/// <summary>
+		/// Our picture service this controller will use
+		/// </summary>
+		private IPictureService _pictureService;
 
 		/// <summary>
 		/// Constructor which allows you to specify your own services.
 		/// </summary>
 		/// <param name="accountService">The account service to use for this controller</param>
-		/// <param name="captionRepo"></param>
-		public CaptionForPictureController(IAccountService accountService, ICaptionRepository captionRepo)
+		/// <param name="pictureService">The picture service to use for this controller</param>
+		public CaptionForPictureController(IAccountService accountService, IPictureService pictureService)
 		{
 			_accountService = accountService;
-			_captionRepo = captionRepo;
+			_pictureService = pictureService;
 		}
 
 		/// <summary>
 		/// Zero-argument constructor will choose the most appropriate repositories for this environment.
 		/// </summary>
 		public CaptionForPictureController()
-			: this(new AccountService(), new Capt.Models.LinqToMySql.CaptionRepository())
+			: this(new AccountService(), new PictureService())
 		{
 		}
 
@@ -69,14 +72,7 @@ namespace Capt.Controllers
 		{
 			List<SyndicationItem> items = new List<SyndicationItem>();
 
-			var captions = (from c in _captionRepo.GetAll()
-							where c.IsVisible 
-							&& !c.User.IsLocked
-							&& c.Picture.IsVisible
-							&& !c.Picture.IsPrivate
-							&& (c.Picture.User == null || !c.Picture.User.IsLocked)
-							orderby c.Event.Datetime descending
-							select c).Take(10);
+			var captions = _pictureService.GetAllCaptions(false).Take(10);
 
 			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
 
@@ -155,25 +151,12 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		public ActionResult Index()
 		{
-			var captions = _captionRepo.GetAll();
+			var captions = _pictureService.GetAllCaptions(ViewBag.IsAdminStuffShown);
 			List<CaptionForPictureViewModel> cfpvms = new List<CaptionForPictureViewModel>();
 
 			foreach (var caption in captions)
 			{
-				if (
-					!ViewBag.IsAdminStuffShown
-					&& (
-						!caption.IsVisible || !caption.Picture.IsVisible || caption.Picture.Activates > DateTime.UtcNow
-						|| caption.Picture.IsPrivate || caption.IsAnonymous
-						|| (caption.Picture.User != null && caption.Picture.User.IsLocked)
-					)
-				)
-				{
-					continue;
-				}
-
 				cfpvms.Add(new CaptionForPictureViewModel(caption));
-
 			}
 
 			User viewingUser = Session["User"] as User;
@@ -183,7 +166,7 @@ namespace Capt.Controllers
 			ViewBag.AreMoreCaptionsLinksShown = true;
 			ViewBag.AreCaptionAuthorLinksShown = true;
 
-			ViewBag.RankedUsers = _accountService.GetRankedUsers(100);
+			ViewBag.RankedUsers = _accountService.GetRankedUsers().Take(100);
 			return View(cfpvms.OrderByDescending(c => c.Created));
 		}
 

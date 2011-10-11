@@ -70,12 +70,12 @@ namespace Capt.Services
 		}
 
 		/// <see cref="Capt.Services.IAccountService.GetRankedUsers"/>
-		public IEnumerable<User> GetRankedUsers(int number)
+		public List<User> GetRankedUsers()
 		{
 			return (from u in _userRepo.GetAll()
 						where !u.IsLocked
 						&& !String.IsNullOrWhiteSpace(u.Name)
-						select u).OrderByDescending(u => u.Score).Take(number);
+						select u).OrderByDescending(u => u.Score).ToList();
 
 		}
 
@@ -124,9 +124,9 @@ namespace Capt.Services
 		}
 
 		/// <see cref="Capt.Services.IAccountService.GetAllUsers" />
-		public IEnumerable<User> GetAllUsers()
+		public List<User> GetAllUsers()
 		{
-			return _userRepo.GetAll();
+			return _userRepo.GetAll().ToList();
 		}
 
 		/// <see cref="Capt.Services.IAccountService.DeleteUser" />

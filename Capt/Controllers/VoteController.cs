@@ -22,6 +22,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Capt.Models;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -32,32 +33,22 @@ namespace Capt.Controllers
 	public class VoteController : Controller
     {
 
-		private IVoteRepository _voteRepo;
-
-		private ICaptionRepository _captionRepo;
-
-		private IPictureRepository _pictureRepo;
+		private IPictureService _pictureService;
 
 		/// <summary>
-		/// Create an instance of this controller with the repositories of your choice.
+		/// Create an instance of this controller with the services of your choice.
 		/// </summary>
-		/// <param name="voteRepo"></param>
-		/// <param name="captionRepo"></param>
-		/// <param name="pictureRepo"></param>
-		public VoteController(IVoteRepository voteRepo, ICaptionRepository captionRepo, IPictureRepository pictureRepo)
+
+		public VoteController(IPictureService pictureService)
 		{
-			_voteRepo = voteRepo;
-			_captionRepo = captionRepo;
-			_pictureRepo = pictureRepo;
+			_pictureService = pictureService;
 		}
 
 		/// <summary>
 		/// Create an instance of this controller with default repositories.
 		/// </summary>
 		public VoteController() : this(
-			new Capt.Models.LinqToMySql.VoteRepository(),
-			new Capt.Models.LinqToMySql.CaptionRepository(),
-			new Capt.Models.LinqToMySql.PictureRepository()
+			new PictureService()
 			)
 		{
 		}
@@ -77,7 +68,7 @@ namespace Capt.Controllers
 				return 0;
 			}
 
-			Caption caption = _captionRepo.GetById(captionId);
+			Caption caption = _pictureService.GetCaptionById(captionId, ViewBag.IsAdminStuffShown);
 			if (caption == null)
 			{
 				throw new ApplicationException("Trying to save vote for non-existing caption ID " + captionId);
@@ -89,69 +80,9 @@ namespace Capt.Controllers
 				throw new ApplicationException("No user in the session when trying to register a caption vote!");
 			}
 
-			if (caption.UserId == user.Id)
-			{
-				// Someone's trying to vote for his own caption
-				return 0;
-			}
+			return _pictureService.AddVoteForCaption(user, caption, isUpvote);
 
-			var votes = _voteRepo.GetByCaptionId(captionId);
-
-			// Make sure he ain't a-scammin' us
-			if (user.Score < 0)
-			{
-				// BZZZT!
-				return (from v in votes
-						select v.Weight).Sum();
-			}
-
-			// see if this user has voted on this already.
-			
-			foreach (Vote vote in votes)
-			{
-				if (vote.UserId == user.Id)
-				{
-					// I'll be a son of a gun, he has.  Either he
-					// (A) Voted this up before, and is now voting it down, & we should DELETE HIS PREVIOUS VOTE.
-					// (B) Voted this down before, and is now voting it up, & we should DELETE HIS PREVIOUS VOTE.
-					// (C) Voted this up before, and is voting it up again because there was a screw-up in the JavaScript
-					//	or he's a haxx0r, & we should IGNORE THIS VOTE
-					// (D) Voted this down before, and is voting it down again becase " " "
-					bool isOldUpvote = vote.Weight > 0;
-
-					// Case A or B
-					if (
-						(isOldUpvote && !isUpvote)
-						|| (!isOldUpvote && isUpvote)
-					)
-					{
-						_voteRepo.Delete(vote);
-					}
-
-					return (from v in votes
-							select v.Weight).Sum();
-				}
-			}
-
-			// OK let's save his vote I guess.
-			Vote newVote = new Vote()
-			{
-				UserId = user.Id,
-				Weight = (isUpvote ? 1 : -1),
-				Event = new Event(EventType.VoteCreated) 
-			};
-
-			CaptionVote captionVote = new CaptionVote()
-			{
-				CaptionId = captionId,
-			};
-
-			newVote.CaptionVotes.Add(captionVote);
-
-			_voteRepo.Save(newVote);
-
-			return (from v in votes
-					select v.Weight).Sum();
+	
 		}
 
 		/// <summary>
@@ -168,7 +99,7 @@ namespace Capt.Controllers
 				return 0;
 			}
 
-			Picture picture = _pictureRepo.GetById(pictureId);
+			Picture picture = _pictureService.GetPictureById(pictureId, ViewBag.IsAdminStuffShown);
 			if (picture == null)
 			{
 				throw new ApplicationException("Trying to save vote for non-existing caption ID " + pictureId);
@@ -180,68 +111,9 @@ namespace Capt.Controllers
 				throw new ApplicationException("No user in the session when trying to register a picture vote!");
 			}
 
-			if (picture.UserId == user.Id)
-			{
-				// Someone's trying to vote for his own caption
-				return 0;
-			}
+			return _pictureService.AddVoteForPicture(user, picture, isUpvote);
 
-			// see if this user has voted on this already.
-			var votes = _voteRepo.GetByPictureId(pictureId);
 
-			// Make sure he ain't a-scammin' us
-			if (user.Score < 0)
-			{
-				// BZZZT!
-				return (from v in votes
-						select v.Weight).Sum();
-			}
-
-			foreach (Vote vote in votes)
-			{
-				if (vote.UserId == user.Id)
-				{
-					// I'll be a son of a gun, he has.  Either he
-					// (A) Voted this up before, and is now voting it down, & we should DELETE HIS PREVIOUS VOTE.
-					// (B) Voted this down before, and is now voting it up, & we should DELETE HIS PREVIOUS VOTE.
-					// (C) Voted this up before, and is voting it up again because there was a screw-up in the JavaScript
-					//	or he's a haxx0r, & we should IGNORE THIS VOTE
-					// (D) Voted this down before, and is voting it down again becase " " "
-					bool isOldUpvote = vote.Weight > 0;
-
-					// Case A or B
-					if (
-						(isOldUpvote && !isUpvote)
-						|| (!isOldUpvote && isUpvote)
-					)
-					{
-						_voteRepo.Delete(vote);
-					}
-
-					return (from v in votes
-							select v.Weight).Sum();
-				}
-			}
-
-			// OK let's save his vote I guess.
-			Vote newVote = new Vote()
-			{
-				UserId = user.Id,
-				Weight = (isUpvote ? 1 : -1),
-				Event = new Event(EventType.VoteCreated)
-			};
-
-			PictureVote pictureVote = new PictureVote()
-			{
-				PictureId = pictureId,
-			};
-
-			newVote.PictureVotes.Add(pictureVote);
-
-			_voteRepo.Save(newVote);
-
-			return (from v in votes
-					select v.Weight).Sum();
 		}
     }
 }

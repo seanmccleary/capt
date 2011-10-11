@@ -32,16 +32,7 @@ namespace Capt.Models
 		/// Get all Picture objects.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<Picture> GetAll();
-
-		/// <summary>
-		/// Get the Picture objects sorted by rank, and filtered appropriately
-		/// </summary>
-		/// <param name="start">Which result number do you want to start on?</param>
-		/// <param name="take">How many results do you want?</param>
-		/// <param name="isForAdmin">Is this going to be shown to an admin, in privilege mode?</param>
-		/// <returns></returns>
-		IEnumerable<Picture> GetRanked(int start, int take, bool isForAdmin);
+		IQueryable<Picture> GetAll();
 
 		/// <summary>
 		/// Get a Picture object by its ID
@@ -49,6 +40,8 @@ namespace Capt.Models
 		/// <param name="pictureId">The ID of the Picture object you want</param>
 		/// <returns></returns>
 		Picture GetById(int pictureId);
+
+		Picture GetNextToActivate();
 
 		/// <summary>
 		/// Get the next picture after another given picture

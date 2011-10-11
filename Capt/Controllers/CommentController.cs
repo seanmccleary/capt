@@ -24,6 +24,7 @@ using System.Web.Mvc;
 using Capt.Models;
 using Capt.Helpers;
 using System.Text.RegularExpressions;
+using Capt.Services;
 
 namespace Capt.Controllers
 {
@@ -34,22 +35,22 @@ namespace Capt.Controllers
 	public class CommentController : Controller
     {
 
-		private ICommentRepository _commentRepo;
+		private IPictureService _pictureService;
 
 		/// <summary>
-		/// Create a new CommentController with the given comment repository
+		/// Create a new CommentController with the specified picture service
 		/// </summary>
-		/// <param name="commentRepo"></param>
-		public CommentController(ICommentRepository commentRepo)
+		/// <param name="commentRepo">The picture service this controller should use</param>
+		public CommentController(IPictureService pictureService)
 		{
-			_commentRepo = commentRepo;
+			_pictureService = pictureService;
 		}
 
 		/// <summary>
-		/// Zero-argument constructor will try and choose the most appropriate repositories for you
+		/// Zero-argument constructor will try and choose the most appropriate services
 		/// </summary>
 		public CommentController()
-			: this(new Capt.Models.LinqToMySql.CommentRepository())
+			: this(new PictureService())
 		{
 		}
 
@@ -93,13 +94,7 @@ namespace Capt.Controllers
 					UserId = user.Id,
 				};
 
-				CaptionComment captionComment = new CaptionComment()
-				{
-					CaptionId = captionId,
-				};
-
-				newComment.CaptionComments.Add(captionComment);
-				_commentRepo.Save(newComment);
+				_pictureService.SaveCommentForCaption(newComment, captionId);
 
 			}
 
@@ -113,7 +108,7 @@ namespace Capt.Controllers
 		/// <returns></returns>
 		private string GetForCaption(int captionId)
 		{
-			var comments = _commentRepo.GetByCaptionId(captionId);
+			var comments = _pictureService.GetCommentsForCaption(captionId, false);
 
 			string list = "<ul class=\"caption_comment_list\">\n";
 			foreach (var comment in comments)

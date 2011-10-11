@@ -29,30 +29,21 @@ namespace Capt.Models.LinqToMySql
 	/// </summary>
 	public class PictureRepository : Repository, IPictureRepository
 	{
-		public IEnumerable<Picture> GetAll()
+		public IQueryable<Picture> GetAll()
 		{
 			return db.Pictures;
 		}
 
-		public IEnumerable<Picture> GetRanked(int start, int take, bool isForAdmin)
+		public Picture GetNextToActivate()
 		{
-			if (isForAdmin)
-			{
-				return db.Pictures.OrderBy(p => p.Rank).Take(take).Skip(start);
-			}
-			else
-			{
-				// For some reason if I put DateTime.UtcNow directly in the linq query,
-				// it says member access is denied??
-				DateTime now = DateTime.UtcNow;
-				return (from p in db.Pictures
-						where p.IsVisible
-						&& p.Activates < now
-						&& !p.IsPrivate
-						&& (p.UserId == null || !p.User.IsLocked)
-						orderby p.Rank
-						select p).Take(take).Skip(start);
-			}
+			// For some reason it won't let me include DateTime.UtcNow directly
+			// in the linq query??? get a run-time exception
+			DateTime now = DateTime.UtcNow;
+			
+			return (from p in db.Pictures
+					where p.Activates > now
+					orderby p.Activates
+					select p).FirstOrDefault();
 		}
 
 		public Picture GetById(int pictureId)

@@ -44,7 +44,7 @@
       <Column Name="AdminNote" Member="AdminNote" Storage="_adminNote" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
       <Column Name="CreateEventId" Member="CreateEventId" Storage="_createEventID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
       <Column Name="Id" Member="Id" Storage="_id" Type="System.Int32" DbType="int" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="IsVisible" Member="IsVisible" Storage="_isVisible" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
+      <Column Name="IsVisible" Member="IsVisible" Storage="_isVisible" Type="System.Boolean" DbType="tinyint(1)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
       <Column Name="ParentCommentId" Member="ParentCommentId" Storage="_parentCommentID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="true" />
       <Column Name="Text" Member="Text" Storage="_text" Type="System.String" DbType="varchar(140)" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />
       <Column Name="UserId" Member="UserId" Storage="_userID" Type="System.Int32" DbType="int" IsPrimaryKey="false" IsDbGenerated="false" CanBeNull="false" />

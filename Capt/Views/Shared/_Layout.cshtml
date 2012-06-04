@@ -27,8 +27,11 @@
         <link rel="alternate" type="application/rss+xml" title="Latest Captions (RSS 2.0)" href="@Url.Action("IndexRss", "CaptionForPicture")" />
         
         <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
-        @Html.Action("Include", "Analytics", new { Area = "Analytics" } )
+        @Html.Action("Include", "Analytics", new { Area = "Analytics" })
         @Html.Action("Include", "Cdn", new { Area = "Cdn" })
+
+        <script type="text/javascript" src=@Url.Content("~/Scripts/CountDown.js")></script>
+
     </head>
     <body>
         <div class="page">
@@ -84,6 +87,20 @@
 
                     </ul>
                 </nav>
+                <div id="next_picture_countdown">
+                    <div id="next_picture_countdown_clock"></div>
+                    @if (!String.IsNullOrWhiteSpace(ViewBag.NextPictureActivates))
+                    { 
+                        <script language="JavaScript">
+                            StartCountDown(
+                                "next_picture_countdown_clock",
+                                "@ViewBag.NextPictureActivates",
+                                "next picture in %%H%% hours, %%M%% minutes, %%S%% seconds",
+                                "New picture! Reload your browser!"
+                            );
+                        </script>        
+                    }
+                </div>
                 <div class="clear" />
             </header>
             <section id="main">

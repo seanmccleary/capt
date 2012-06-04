@@ -16,23 +16,173 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with capt.  If not, see <http://www.gnu.org/licenses/>.
  *@
-@model IEnumerable<Capt.Models.User>
+@using Capt.Models
+@model Dictionary<string, List<RankedUser>>
 
+<h3>score board</h3>
 
+<ul id="top_players_list_controls" class="menu">
+    <li>
+        <a id="top_players_list_activate_today" class="top_players_list_control" onclick="$('.top_players_list').hide(); $('#top_players_today').show(); $('.top_players_list_control').removeClass('selected'); $('#top_players_list_activate_today').addClass('selected');">today</a><br />
+        <a id="top_players_list_activate_yesterday" class="top_players_list_control" onclick="$('.top_players_list').hide(); $('#top_players_yesterday').show(); $('.top_players_list_control').removeClass('selected'); $('#top_players_list_activate_yesterday').addClass('selected');">yesterday</a>
+    </li>
+    <li>
+        <a id="top_players_list_activate_this_week" class="top_players_list_control" onclick="$('.top_players_list').hide(); $('#top_players_this_week').show(); $('.top_players_list_control').removeClass('selected'); $('#top_players_list_activate_this_week').addClass('selected');">this week</a><br />
+        <a id="top_players_list_activate_last_week" class="top_players_list_control" onclick="$('.top_players_list').hide(); $('#top_players_last_week').show(); $('.top_players_list_control').removeClass('selected'); $('#top_players_list_activate_last_week').addClass('selected');">last week</a>
+    </li>
+    <li>
+        <a id="top_players_list_activate_this_month" class="top_players_list_control" onclick="$('.top_players_list').hide(); $('#top_players_this_month').show(); $('.top_players_list_control').removeClass('selected'); $('#top_players_list_activate_this_month').addClass('selected');">this month</a><br />
+        <a id="top_players_list_activate_last_month" class="top_players_list_control" onclick="$('.top_players_list').hide(); $('#top_players_last_month').show(); $('.top_players_list_control').removeClass('selected'); $('#top_players_list_activate_last_month').addClass('selected');">last month</a>
+    </li>
+    <li>
+        <a id="top_players_list_activate_all_time" class="top_players_list_control selected" onclick="$('.top_players_list').hide(); $('#top_players_all_time').show(); $('.top_players_list_control').removeClass('selected'); $('#top_players_list_activate_all_time').addClass('selected');">all time</a>
+    </li>
+</ul>
 
-<h3>Top Captrati</h3>
+<ol id="top_players_today" class="top_players_list" style="display: none;">
+    <div id="today_countdown_clock" class="scoreboard_clock"></div>
+    @foreach (var rankedUser in Model["today"])
+    {
 
-<ol>
-    @foreach (var item in Model) {
-
-        if (String.IsNullOrWhiteSpace(item.Name))
+        if (String.IsNullOrWhiteSpace(rankedUser.User.Name))
         {
             continue;
         }
 
         <li>
-                @Html.ActionLink(item.Name, "IndexByUser", "CaptionForPicture", new { userName = item.Name }, new { @class = "caption_list_control" }) 
-                <span class="scoreboard_points">(@item.Score @(item.Score == 1 ? "point" : "points"))</span>
+                @Html.ActionLink(rankedUser.User.Name, "IndexByUser", "CaptionForPicture", new { userName = rankedUser.User.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@rankedUser.Score @(rankedUser.Score == 1 ? "point" : "points"))</span>
+        </li>
+    }
+</ol>
+@if (!String.IsNullOrWhiteSpace(ViewBag.NextPictureActivates))
+{
+    <script language="JavaScript">
+        StartCountDown(
+            "today_countdown_clock",
+            "@ViewBag.EndOfToday",
+            "today ends in %%H%% hours, %%M%% minutes, %%S%% seconds",
+            "It's tomorrow! Reload your browser!"
+        );
+    </script>        
+}
+
+<ol id="top_players_yesterday" class="top_players_list" style="display: none;">
+    @foreach (var rankedUser in Model["yesterday"])
+    {
+
+        if (String.IsNullOrWhiteSpace(rankedUser.User.Name))
+        {
+            continue;
+        }
+
+        <li>
+                @Html.ActionLink(rankedUser.User.Name, "IndexByUser", "CaptionForPicture", new { userName = rankedUser.User.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@rankedUser.Score @(rankedUser.Score == 1 ? "point" : "points"))</span>
+        </li>
+    }
+</ol>
+
+<ol id="top_players_this_week" class="top_players_list" style="display: none;">
+    <div id="this_week_countdown_clock" class="scoreboard_clock"></div>
+    @foreach (var rankedUser in Model["thisWeek"])
+    {
+
+        if (String.IsNullOrWhiteSpace(rankedUser.User.Name))
+        {
+            continue;
+        }
+
+        <li>
+                @Html.ActionLink(rankedUser.User.Name, "IndexByUser", "CaptionForPicture", new { userName = rankedUser.User.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@rankedUser.Score @(rankedUser.Score == 1 ? "point" : "points"))</span>
+        </li>
+    }
+</ol>
+@if (!String.IsNullOrWhiteSpace(ViewBag.NextPictureActivates))
+{
+    <script language="JavaScript">
+        StartCountDown(
+            "this_week_countdown_clock",
+            "@ViewBag.EndOfWeek",
+            "this week ends in %%D%% days, %%H%% hours, %%M%% minutes, %%S%% seconds",
+            "It's next week! Reload your browser!"
+        );
+    </script>        
+}
+
+<ol id="top_players_last_week" class="top_players_list" style="display: none;">
+    @foreach (var rankedUser in Model["lastWeek"])
+    {
+
+        if (String.IsNullOrWhiteSpace(rankedUser.User.Name))
+        {
+            continue;
+        }
+
+        <li>
+                @Html.ActionLink(rankedUser.User.Name, "IndexByUser", "CaptionForPicture", new { userName = rankedUser.User.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@rankedUser.Score @(rankedUser.Score == 1 ? "point" : "points"))</span>
+        </li>
+    }
+</ol>
+
+<ol id="top_players_this_month" class="top_players_list" style="display: none;">
+    <div id="this_month_countdown_clock" class="scoreboard_clock"></div>
+    @foreach (var rankedUser in Model["thisMonth"])
+    {
+
+        if (String.IsNullOrWhiteSpace(rankedUser.User.Name))
+        {
+            continue;
+        }
+
+        <li>
+                @Html.ActionLink(rankedUser.User.Name, "IndexByUser", "CaptionForPicture", new { userName = rankedUser.User.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@rankedUser.Score @(rankedUser.Score == 1 ? "point" : "points"))</span>
+        </li>
+    }
+</ol>
+@if (!String.IsNullOrWhiteSpace(ViewBag.NextPictureActivates))
+{
+    <script language="JavaScript">
+        StartCountDown(
+            "this_month_countdown_clock",
+            "@ViewBag.EndOfMonth",
+            "this month ends in %%D%% days, %%H%% hours, %%M%% minutes, %%S%% seconds",
+            "It's next week! Reload your browser!"
+        );
+    </script>        
+}
+
+<ol id="top_players_last_month" class="top_players_list" style="display: none;">
+    @foreach (var rankedUser in Model["lastMonth"])
+    {
+
+        if (String.IsNullOrWhiteSpace(rankedUser.User.Name))
+        {
+            continue;
+        }
+
+        <li>
+                @Html.ActionLink(rankedUser.User.Name, "IndexByUser", "CaptionForPicture", new { userName = rankedUser.User.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@rankedUser.Score @(rankedUser.Score == 1 ? "point" : "points"))</span>
+        </li>
+    }
+</ol>
+
+<ol id="top_players_all_time" class="top_players_list">
+    @foreach (var rankedUser in Model["allTime"])
+    {
+
+        if (String.IsNullOrWhiteSpace(rankedUser.User.Name))
+        {
+            continue;
+        }
+
+        <li>
+                @Html.ActionLink(rankedUser.User.Name, "IndexByUser", "CaptionForPicture", new { userName = rankedUser.User.Name }, new { @class = "caption_list_control" }) 
+                <span class="scoreboard_points">(@rankedUser.Score @(rankedUser.Score == 1 ? "point" : "points"))</span>
         </li>
     }
 </ol>

@@ -53,7 +53,7 @@ namespace Capt.Services
 		/// Get a list of the users, ranked by score
 		/// </summary>
 		/// <returns>A list of users, ranked by score</returns>
-		List<User> GetRankedUsers();
+		List<RankedUser> GetRankedUsers(DateTime? start = null, DateTime? end = null);
 
 		/// <summary>
 		/// Get all the users.  (Just wait 'til you get a load of the return value description.)

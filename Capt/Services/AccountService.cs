@@ -70,17 +70,27 @@ namespace Capt.Services
 		}
 
 		/// <see cref="Capt.Services.IAccountService.GetRankedUsers"/>
-		public List<User> GetRankedUsers()
+		public List<RankedUser> GetRankedUsers(DateTime? start = null, DateTime? end = null)
 		{
 
-			// TODO: This is just... Jesus.  I'm sorting by something whih
+			// TODO: This is just... Jesus.  I'm sorting by something which
 			// isn't actually in the database.  That's the problem. It requires
 			// selecting ALL users first.  This oughts be fixed up.
-			return (from u in _userRepo.GetAll()
+			var users = from u in _userRepo.GetAll()
 						where !u.IsLocked
 						&& u.Name != null
-						select u).ToList().OrderByDescending(u => u.Score).ToList();
+						select u;
 
+			List<RankedUser> rankedUsers = new List<RankedUser>();
+			foreach (var user in users)
+			{
+				rankedUsers.Add(new RankedUser(user.getScoreForDateRange(start, end), user));
+			}
+
+			return (from ru in rankedUsers
+					where ru.Score > 0
+					orderby ru.Score descending
+					select ru).ToList();
 		}
 
 		/// <see cref="Capt.Services.IAccountService.GetOrCreateUser"/>

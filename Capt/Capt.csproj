@@ -154,6 +154,7 @@
     <Compile Include="Models\LinqToMySql\Repository.cs" />
     <Compile Include="Models\LinqToMySql\UserRepository.cs" />
     <Compile Include="Models\LinqToMySql\VoteRepository.cs" />
+    <Compile Include="Models\RankedUser.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserNameMustBeUniqueAttribute.cs" />
     <Compile Include="Models\Vote.cs" />
@@ -173,6 +174,7 @@
     <Content Include="Global.asax" />
     <Content Include="README.jQuery.vsdoc.txt" />
     <Content Include="Scripts\CaptionInput.js" />
+    <Content Include="Scripts\CountDown.js" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

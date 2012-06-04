@@ -33,14 +33,31 @@ namespace Capt.Models
 		{
 			get
 			{
-				int score = 0;
-				List<Vote> votesOnUsersCaptions = new List<Vote>();
-				foreach (var usersCaption in Captions)
-				{
-					score += usersCaption.Votes.Sum(v => v.Weight);
-				}
-				return score;
+				return this.getScoreForDateRange();
 			}
+		}
+
+		public int getScoreForDateRange(DateTime? start = null, DateTime? end = null)
+		{
+			int score = 0;
+			List<Vote> votesOnUsersCaptions = new List<Vote>();
+
+			List<Caption> timelyCaptions;
+			if (start != null && end != null)
+			{
+				timelyCaptions = Captions.Where(c => c.Event.Datetime >= start && c.Event.Datetime <= end).ToList();
+			}
+			else
+			{
+				timelyCaptions = Captions.ToList();
+			}
+			
+			foreach (var usersCaption in timelyCaptions)
+			{
+				score += usersCaption.Votes.Sum(v => v.Weight);
+			}
+
+			return score;
 		}
 
 	}

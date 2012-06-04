@@ -310,12 +310,27 @@ namespace Capt.Controllers
 			// We only got that extra one to see if there was another page of results
 			pictures = pictures.Take(10).ToList();
 
-			// Get the next-to-activeate picture
-			var nextPicture = _pictureService.GetNextPictureToActivate();
+			DateTime startOfWeek = DateTime.UtcNow.Date.AddDays(-1 * (DateTime.UtcNow.DayOfWeek - DayOfWeek.Sunday));
+			DateTime endOfWeek = startOfWeek.AddDays(7);
 
-			ViewBag.NextPictureActivates = (nextPicture != null ? nextPicture.Activates.ToString() + " UTC-0000" : "");
+			DateTime startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+			DateTime endOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month + 1, 1);
 
-			ViewBag.RankedUsers = _accountService.GetRankedUsers().Take(100);
+			DateTime startOfLastMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month - 1, 1);
+
+			ViewBag.EndOfToday = DateTime.UtcNow.Date.AddDays(1).ToString() + " UTC-0000";
+			ViewBag.EndOfWeek = endOfWeek.ToString() + " UTC-0000";
+			ViewBag.EndOfMonth = endOfMonth.ToString() + " UTC-0000";
+
+			ViewBag.RankedUsers = new Dictionary<string, List<RankedUser>>() {
+				{ "today" , _accountService.GetRankedUsers(DateTime.UtcNow.Date, DateTime.UtcNow.Date.AddDays(1)) },
+				{ "yesterday" , _accountService.GetRankedUsers(DateTime.UtcNow.Date.AddDays(-1), DateTime.Today.Date) },
+				{ "thisWeek", _accountService.GetRankedUsers(startOfWeek, endOfWeek) },
+				{ "lastWeek", _accountService.GetRankedUsers(startOfWeek.AddDays(-7), startOfWeek) },
+				{ "thisMonth", _accountService.GetRankedUsers(startOfMonth, endOfMonth) },
+				{ "lastMonth", _accountService.GetRankedUsers(startOfLastMonth, startOfMonth) },
+				{ "allTime", _accountService.GetRankedUsers() }
+			};
 
 			return View(from p in pictures select new PictureCaptionsViewModel(p, (bool)ViewData["IsAdminStuffShown"]));
 		}

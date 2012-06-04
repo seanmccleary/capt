@@ -25,21 +25,6 @@
 <script src="@Url.Content("~/Scripts/CaptionInput.js")" type="text/javascript"></script>
 
 <div id="scoreboard">
-
-    @if (!String.IsNullOrWhiteSpace(ViewBag.NextPictureActivates))
-    {
-        
-        <script language="JavaScript">
-            TargetDate = "@ViewBag.NextPictureActivates";
-            CountActive = true;
-            CountStepper = -1;
-            LeadingZero = true;
-            DisplayFormat = "next picture in %%H%% hours, %%M%% minutes, %%S%% seconds";
-            FinishMessage = "Reload your browser!";
-        </script>
-        <script language="JavaScript" src="http://scripts.hashemian.com/js/countdown.js"></script>        
-    }
-
     @Html.Partial("~/Views/User/UserForScoreBoardPartial.cshtml", ViewData["RankedUsers"])
 </div>
 
@@ -100,7 +85,7 @@
                     
                     @if (item.CaptionAuthorCount > 0)
                     {
-                        <span>by @item.CaptionAuthorCount @(item.CaptionAuthorCount == 1 ? "captrato" : "captrati")</span>
+                        <span>by @item.CaptionAuthorCount @(item.CaptionAuthorCount == 1 ? "person" : "people")</span>
                     }
                     <br />
 

@@ -165,7 +165,19 @@ namespace Capt.Controllers
 			ViewBag.AreMoreCaptionsLinksShown = true;
 			ViewBag.AreCaptionAuthorLinksShown = true;
 
-			ViewBag.RankedUsers = _accountService.GetRankedUsers().Take(100);
+			DateTime startOfWeek = DateTime.Today.AddDays(DateTime.Today.DayOfWeek - DayOfWeek.Monday);
+			DateTime endOfWeek = startOfWeek.AddDays(6);
+
+			DateTime startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+			DateTime endOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month + 1, 1);
+
+			ViewBag.RankedUsers = new Dictionary<string, List<RankedUser>>() {
+				{ "today" , _accountService.GetRankedUsers(DateTime.Today, DateTime.Today.AddDays(1)) },
+				{ "thisWeek", _accountService.GetRankedUsers(startOfWeek, endOfWeek) },
+				{ "thisMonth", _accountService.GetRankedUsers(startOfMonth, endOfMonth) },
+				{ "allTime", _accountService.GetRankedUsers() }
+			};
+
 			return View(cfpvms.OrderByDescending(c => c.Created));
 		}
 

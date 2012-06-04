@@ -109,5 +109,21 @@ namespace Capt.Controllers
 			return Redirect(returnUrl);
 		}
 
+		/// <summary>
+		/// This unexciting action pretty much just displays the login page.
+		/// </summary>
+		/// <returns></returns>
+		public ActionResult LogOn()
+		{
+			if (Request.IsAuthenticated)
+			{
+				// User's already logged in?
+				return Redirect("/");
+			}
+
+			return View();
+		}
+
+
 	}
 }

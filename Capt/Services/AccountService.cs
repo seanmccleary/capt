@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Capt.Models;
+using Capt.Models.Repositories;
 
 namespace Capt.Services
 {
@@ -41,8 +42,8 @@ namespace Capt.Services
 		/// </summary>
 		public AccountService()
 			: this(
-				new Capt.Models.LinqToMySql.UserRepository(),
-				new Capt.Models.LinqToMySql.OAuthTokenRepository()
+				new Capt.Models.Repositories.LinqToMySql.UserRepository(),
+				new Capt.Models.Repositories.LinqToMySql.OAuthTokenRepository()
 			)
 		{
 		}

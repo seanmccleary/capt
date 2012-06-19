@@ -22,6 +22,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Capt.Models;
+using Capt.Models.Repositories;
 
 namespace Capt
 {
@@ -97,8 +99,8 @@ namespace Capt
 				// That most likely happened by someone restarting the server in the middle of their
 				// session, using the inProc session handler.
 				// Let's just sneak their User object back into the session.
-				Capt.Models.IUserRepository userRepo = new Capt.Models.LinqToMySql.UserRepository();
-				Capt.Models.User user = userRepo.GetById(Convert.ToInt32(User.Identity.Name));
+				IUserRepository userRepo = new Capt.Models.Repositories.LinqToMySql.UserRepository();
+				User user = userRepo.GetById(Convert.ToInt32(User.Identity.Name));
 
 				if (user == null)
 				{

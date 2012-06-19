@@ -21,50 +21,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Capt.Models
+namespace Capt.Models.Repositories
 {
 	/// <summary>
-	/// A repository interface for reading users from and saving users to the data store.
+	/// A repository interface for reading Vote objects from and writing them to the data store.
 	/// </summary>
-	public interface IUserRepository
+	public interface IVoteRepository
 	{
 		/// <summary>
-		/// Get all the users from the database.
+		/// Get all Vote objects for a given Caption
 		/// </summary>
+		/// <param name="captionId">ID of the caption whose votes you want</param>
 		/// <returns></returns>
-		IQueryable<User> GetAll();
+		IQueryable<Vote> GetByCaptionId(int captionId);
 
 		/// <summary>
-		/// Get a user by his nickname.
+		/// Get all Vote objects for a given Picture
 		/// </summary>
-		/// <param name="name"></param>
+		/// <param name="pictureId">ID of the Picture whose votes you want</param>
 		/// <returns></returns>
-		User GetByName(string name);
+		IQueryable<Vote> GetByPictureId(int pictureId);
 
 		/// <summary>
-		/// Get a user by his external login ID
+		/// Get all Vote objects created by a given User
 		/// </summary>
-		/// <param name="externalLoginId">This might be, for example, an OpenID identifier</param>
-		/// <returns>The requested User, or null if not found.</returns>
-		User GetByExternalLoginId(string externalLoginId);
+		/// <param name="userId">ID of the user whose votes you want</param>
+		/// <returns></returns>
+		IQueryable<Vote> GetByUserId(int userId);
 
 		/// <summary>
-		/// Get a user by his database Id.
+		/// Save (insert or update) a Vote to the data store
 		/// </summary>
-		/// <param name="userID">The database Id</param>
-		/// <returns>The requested user, or null if not found</returns>
-		User GetById(int userId);
+		/// <param name="vote">The vote you'd like to save</param>
+		void Save(Vote vote);
 
 		/// <summary>
-		/// Save a user to the database, doing an insert if he's new or update if not.
+		/// Delete a given vote from the data store
 		/// </summary>
-		/// <param name="user">The user to save.</param>
-		void Save(User user);
-
-		/// <summary>
-		/// Delete a user from the data store.
-		/// </summary>
-		/// <param name="user">The user to delete</param>
-		void Delete(User user);
+		/// <param name="vote">The Vote you'd like to delete</param>
+		void Delete(Vote vote);
 	}
 }

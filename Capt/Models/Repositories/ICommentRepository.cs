@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 using Capt.Models;
 
-namespace Capt.Models
+namespace Capt.Models.Repositories
 {
 	/// <summary>
 	/// Repository interface for getting Comments into and out of the data store.

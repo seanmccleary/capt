@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Capt.Models
+namespace Capt.Models.Repositories
 {
 	/// <summary>
 	/// A repository interface to get Picture objects into/out of the data store.

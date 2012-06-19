@@ -20,18 +20,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Capt.Models.Repositories;
 
-namespace Capt.Models.LinqToMySql
+namespace Capt.Models.Repositories.LinqToMySql
 {
 	/// <summary>
-	/// Functionality to read/write OAuthToken objects to/from the MySQL database.
+	/// Base class for the DbLinq linq to mysql repositories.
 	/// </summary>
-	public class OAuthTokenRepository : Repository, IOAuthTokenRepository
+	public abstract class Repository
 	{
-		public void Save(OAuthToken oauthToken)
-		{
-			db.Events.InsertOnSubmit(oauthToken.Event);
-			db.SubmitChanges();
-		}
+		protected Models.Capt db = new Models.Capt(
+			new MySql.Data.MySqlClient.MySqlConnection(
+				System.Configuration.ConfigurationManager.ConnectionStrings["capt"].ConnectionString
+			)
+		);
 	}
 }

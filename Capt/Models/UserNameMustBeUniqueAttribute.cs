@@ -22,6 +22,7 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace Capt.Models
 {
 	/// <summary>
@@ -42,7 +43,7 @@ namespace Capt.Models
 			// See if this user name they've chosen is already taken
 			return (
 				value != null
-				&& (new LinqToMySql.UserRepository()).GetByName(((string)value).Trim()) == null
+				&& (new Repositories.LinqToMySql.UserRepository()).GetByName(((string)value).Trim()) == null
 			);
 
 		}

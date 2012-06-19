@@ -19,19 +19,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Web;
+using Capt.Models.Repositories;
 
-namespace Capt.Models
+namespace Capt.Models.Repositories.LinqToMySql
 {
 	/// <summary>
-	/// Repository interface for getting License objects in to or out of the data store.
+	/// Functionality to read/write OAuthToken objects to/from the MySQL database.
 	/// </summary>
-	public interface ILicenseRepository
+	public class OAuthTokenRepository : Repository, IOAuthTokenRepository
 	{
-		/// <summary>
-		/// Get all the License objects.
-		/// </summary>
-		/// <returns></returns>
-		IQueryable<License> GetAll();
+		public void Save(OAuthToken oauthToken)
+		{
+			db.Events.InsertOnSubmit(oauthToken.Event);
+			db.SubmitChanges();
+		}
 	}
 }

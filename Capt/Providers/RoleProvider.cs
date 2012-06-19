@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Capt.Models;
+using Capt.Models.Repositories;
 
 namespace Capt.Providers
 {
@@ -43,7 +44,7 @@ namespace Capt.Providers
 		/// <summary>
 		/// Create an instance of this role provider with the default repository.
 		/// </summary>
-		public RoleProvider() : this(new Capt.Models.LinqToMySql.UserRepository())
+		public RoleProvider() : this(new Capt.Models.Repositories.LinqToMySql.UserRepository())
 		{
 		}
 

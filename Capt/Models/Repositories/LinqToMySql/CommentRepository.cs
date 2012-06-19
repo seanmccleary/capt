@@ -20,17 +20,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Capt.Models.Repositories;
 
-namespace Capt.Models.LinqToMySql
+namespace Capt.Models.Repositories.LinqToMySql
 {
 	/// <summary>
-	/// Functionality to read/write License objects to/from the MySQL database.
+	/// Functionality to read/write Comment objects to/from the MySQL database.
 	/// </summary>
-	public class LicenseRepository : Repository, ILicenseRepository
+	public class CommentRepository : Repository, ICommentRepository
 	{
-		public IQueryable<License> GetAll()
+		public IQueryable<Comment> GetByCaptionId(int captionId)
 		{
-			return db.Licenses;
+			return from c in db.Comments
+				   join cc in db.CaptionComments on c.Id equals cc.CommentId
+				   where cc.CaptionId == captionId
+				   select c;
 		}
+
+		public void Save(Comment comment)
+		{
+			// Make sure this is a new vote we're saving here.  Not too worried about functionality to edit votes.
+			if (comment.Id == 0)
+			{
+				// Smashing.
+				db.Events.InsertOnSubmit(comment.Event);
+			}
+			else
+			{
+				throw new NotImplementedException("Updating comments isn't implemented yet.");
+			}
+
+			db.SubmitChanges();
+
+		}
+
 	}
 }

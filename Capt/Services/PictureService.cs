@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Capt.Models;
+using Capt.Models.Repositories;
 
 namespace Capt.Services
 {
@@ -42,11 +43,11 @@ namespace Capt.Services
 		/// </summary>
 		public PictureService()
 			: this(
-				new Capt.Models.LinqToMySql.CaptionRepository(),
-				new Capt.Models.LinqToMySql.CommentRepository(),
-				new Capt.Models.LinqToMySql.PictureRepository(),
-				new Capt.Models.LinqToMySql.LicenseRepository(),
-				new Capt.Models.LinqToMySql.VoteRepository()
+				new Capt.Models.Repositories.LinqToMySql.CaptionRepository(),
+				new Capt.Models.Repositories.LinqToMySql.CommentRepository(),
+				new Capt.Models.Repositories.LinqToMySql.PictureRepository(),
+				new Capt.Models.Repositories.LinqToMySql.LicenseRepository(),
+				new Capt.Models.Repositories.LinqToMySql.VoteRepository()
 			)
 		{
 		}
@@ -218,15 +219,11 @@ namespace Capt.Services
 		public List<Picture> GetRankedPictures(int count, int start, bool isAdmin)
 		{
 			var pictures = _pictureRepo.GetAll().OrderBy(p => p.Rank).Take(count).Skip(start);
-			var tmpPics = pictures.ToList();
-
 
 			if (!isAdmin)
 			{
 				pictures = FilterPicturesForNonAdmin(pictures);
 			}
-			
-			tmpPics = pictures.ToList();
 
 			return pictures.ToList();
 

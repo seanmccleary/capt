@@ -20,8 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Capt.Models.Repositories;
 
-namespace Capt.Models.LinqToMySql
+namespace Capt.Models.Repositories.LinqToMySql
 {
 	/// <summary>
 	/// Functionality to read/write Vote objects to/from the MySQL database.

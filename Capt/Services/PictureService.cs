@@ -193,11 +193,11 @@ namespace Capt.Services
 		private IQueryable<Picture> FilterPicturesForNonAdmin(IQueryable<Picture> pictures)
 		{
 			DateTime now = DateTime.UtcNow;
-
+			
 			return (from p in pictures
 					where p.Activates < now
 					&& p.IsVisible && !p.IsPrivate
-					&& (p.UserId == null || !p.User.IsLocked)
+					&& (!p.UserId.HasValue || !p.User.IsLocked)
 					select p);
 		}
 
@@ -218,11 +218,15 @@ namespace Capt.Services
 		public List<Picture> GetRankedPictures(int count, int start, bool isAdmin)
 		{
 			var pictures = _pictureRepo.GetAll().OrderBy(p => p.Rank).Take(count).Skip(start);
+			var tmpPics = pictures.ToList();
+
 
 			if (!isAdmin)
 			{
 				pictures = FilterPicturesForNonAdmin(pictures);
 			}
+			
+			tmpPics = pictures.ToList();
 
 			return pictures.ToList();
 

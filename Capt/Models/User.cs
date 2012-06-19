@@ -40,7 +40,6 @@ namespace Capt.Models
 		public int getScoreForDateRange(DateTime? start = null, DateTime? end = null)
 		{
 			int score = 0;
-			List<Vote> votesOnUsersCaptions = new List<Vote>();
 
 			List<Caption> timelyCaptions;
 			if (start != null && end != null)

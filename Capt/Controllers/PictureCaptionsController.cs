@@ -115,7 +115,6 @@ namespace Capt.Controllers
 			ViewBag.IsCaptionTextAreaExpanded = false;
 			ViewBag.IsUserNameHinted = true;
 			SetNextAndPreviousPictureIds(pic);
-
 			
 			return View(pcvm);
 		}

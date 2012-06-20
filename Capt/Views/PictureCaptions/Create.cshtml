@@ -103,26 +103,28 @@
                 @:</div>
             
             }
-
-            @using (Html.BeginForm("SetSortOrder", "PictureCaptions", new { pictureId = Model.PictureId }, FormMethod.Post, new { id = "sort_order_form" }))
-            {
-                
-                <!-- AddThis Button BEGIN -->
-                <div id="add_this" class="addthis_toolbox addthis_default_style ">
-                <a class="addthis_button_preferred_1"></a>
-                <a class="addthis_button_preferred_2"></a>
-                <a class="addthis_button_preferred_3"></a>
-                <a class="addthis_button_preferred_4"></a>
-                <a class="addthis_button_compact"></a>
-                <a class="addthis_counter addthis_bubble_style"></a>
-                </div>
-                <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4e743dc90a13fff0"></script>
-                <!-- AddThis Button END -->                    
-                
-                @Html.DropDownList("sortOrder", (List<SelectListItem>)ViewData["SortOptions"], new { id = "sort_order", onchange = "form.submit();" })
-
-           
-            }
+			@if(Model.Captions.Count() > 1) 
+			{
+	            using (Html.BeginForm("SetSortOrder", "PictureCaptions", new { pictureId = Model.PictureId }, FormMethod.Post, new { id = "sort_order_form" }))
+	            {
+	                
+	                <!-- AddThis Button BEGIN -->
+	                <div id="add_this" class="addthis_toolbox addthis_default_style ">
+	                <a class="addthis_button_preferred_1"></a>
+	                <a class="addthis_button_preferred_2"></a>
+	                <a class="addthis_button_preferred_3"></a>
+	                <a class="addthis_button_preferred_4"></a>
+	                <a class="addthis_button_compact"></a>
+	                <a class="addthis_counter addthis_bubble_style"></a>
+	                </div>
+	                <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4e743dc90a13fff0"></script>
+	                <!-- AddThis Button END -->                    
+	                
+	                @Html.DropDownList("sortOrder", (List<SelectListItem>)ViewData["SortOptions"], new { id = "sort_order", onchange = "form.submit();" })
+	
+	           
+	            }
+	        }
             <div id="main_image_captions_container">
                 @Html.Partial("~/Views/CaptionForPicture/IndexPartial.cshtml", Model.Captions)
             </div>

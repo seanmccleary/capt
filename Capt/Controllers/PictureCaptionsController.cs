@@ -160,14 +160,30 @@ namespace Capt.Controllers
 					Event = new Event(EventType.CaptionCreated)
 				};
 
+                bool isUserAltered = false;
+
 				if (
 					!caption.IsAnonymous
 					&& String.IsNullOrWhiteSpace(caption.User.Name)
 					&& !String.IsNullOrWhiteSpace(pcvm.UserName))
 				{
 					caption.User.Name = pcvm.UserName;
-					_accountService.SaveUser(caption.User);
+                    isUserAltered = true;	
 				}
+
+                if (
+                    String.IsNullOrWhiteSpace(((User)Session["User"]).EmailAddress)
+                    && !String.IsNullOrWhiteSpace(pcvm.EmailAddress)
+                )
+                {
+                    caption.User.EmailAddress = pcvm.EmailAddress;
+                    isUserAltered = true;
+                }
+
+                if (isUserAltered)
+                {
+                    _accountService.SaveUser(caption.User);
+                }
 
 				_pictureService.SaveCaption(caption);
 

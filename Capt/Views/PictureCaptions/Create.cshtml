@@ -83,14 +83,17 @@
                             @Html.TextBoxFor(model => model.UserName, UserNameAttributes)<br />
                             @Html.ValidationMessageFor(model => model.UserName)
                         </div>
+                
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => model.EmailAddress, UserNameAttributes)<br />
+                            @Html.ValidationMessageFor(model => model.EmailAddress)
+                        </div>                
                     }
                 
                     <div class="editor-field" id="caption_anonymous_control_container">
                         @Html.EditorFor(model => model.IsAnonymous) @Html.LabelFor(model => model.IsAnonymous, "Anonymous?")
                         @Html.ValidationMessageFor(model => model.IsAnonymous)
-
-                        <input type="checkbox" name="facebook_share" /> Share your witticism on Faceboo?
-                        <input type="checkbox" name="facebook_share" /> How about Twitter?
+                        
                     </div>
                 
                     <div style="clear:both;" id="share_controlers">
@@ -103,10 +106,10 @@
                 @:</div>
             
             }
-			@if(Model.Captions.Count() > 1) 
-			{
-	            using (Html.BeginForm("SetSortOrder", "PictureCaptions", new { pictureId = Model.PictureId }, FormMethod.Post, new { id = "sort_order_form" }))
-	            {
+			@if (Model.Captions.Count() > 1)
+   {
+       using (Html.BeginForm("SetSortOrder", "PictureCaptions", new { pictureId = Model.PictureId }, FormMethod.Post, new { id = "sort_order_form" }))
+       {
 	                
 	                <!-- AddThis Button BEGIN -->
 	                <div id="add_this" class="addthis_toolbox addthis_default_style ">
@@ -123,8 +126,8 @@
 	                @Html.DropDownList("sortOrder", (List<SelectListItem>)ViewData["SortOptions"], new { id = "sort_order", onchange = "form.submit();" })
 	
 	           
-	            }
-	        }
+       }
+   }
             <div id="main_image_captions_container">
                 @Html.Partial("~/Views/CaptionForPicture/IndexPartial.cshtml", Model.Captions)
             </div>

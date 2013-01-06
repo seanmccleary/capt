@@ -104,8 +104,8 @@ namespace Capt.Models
 		private static Dictionary<string, string> defaultTextHints = new Dictionary<string,string>()
 		{
 			{ "CaptionText", "Your Caption..." },
-			{ "UserName",  "Your Nickname..." }
-
+			{ "UserName",  "Your Nickname..." },
+            { "EmailAddress", "Your Email Address..." }
 		};
 
 		private static Dictionary<string, string> errorMessages = new Dictionary<string,string>()
@@ -131,8 +131,12 @@ namespace Capt.Models
 
 		[UserNameMustBeUnique(ErrorMessage = "Someone's already got dibs on that name. (Don't you hate that?)")]
 		[StringLength(45, ErrorMessage = "Your nickname can't be longer than 45 characters. (I chose that limit at random.)")]
-		[NoHtml(ErrorMessage = "It looks like there's some HTML in your user name, and that aian't allowed!")]
+		[NoHtml(ErrorMessage = "It looks like there's some HTML in your user name, and that ain't allowed!")]
 		public string UserName { get; set; }
+
+        [StringLength(100, ErrorMessage = "Your email address can't be longer than 100 characters. Sorry, pal, but seriously, WTF, more than 100 characters?")]
+        [NoHtml(ErrorMessage = "It looks like there's some HTML in your emaila ddress, and that ain't allowed!")]
+        public string EmailAddress { get; set; }
 
 		/// <summary>
 		/// Whether or not the user name is currently set to its default hint

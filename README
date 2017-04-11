@@ -1,0 +1,35 @@
+# capt #
+
+capt lets you create caption contest websites.
+
+Use it at your own risk.  (I wouldn't slap a "1.0" label on it quite yet.)
+
+## Credits ##
+
+I wrote capt, using some 3rd party libraries.  You can see some more details of the technology it was built with on the [credits page](credits).
+
+## License ##
+
+capt is free software: you can redistribute it and/or modify it under the terms of the [GNU Affero General Public License](http://www.gnu.org/licenses/agpl.html) as published by the [Free Software Foundation](http://www.fsf.org/), either version 3 of the License, or (at your option) any later version.
+
+capt is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with capt.  If not, see <http://www.gnu.org/licenses/>.
+
+Notes
+
+If you're running this under [mono](http://www.mono-project.com/), don't forget to run the following first:
+
+
+```
+#!sh
+yes yes | sudo mozroots --import --machine
+```
+
+And if you're going to run under a user account (maybe from MonoDevelop or something):
+
+
+```
+#!sh
+yes yes | mozroots --import
+```
